@@ -569,10 +569,24 @@ def process_payment(request):
                 order.payment_status = 'در انتظار تایید'
                 order.save()
                 
-                # خالی کردن سبد خرید
-                cart.is_paid = True
-                cart.save()
-                
+                # علامت‌گذاری سبد خرید به عنوان پرداخت‌شده
+                order.cart.is_paid = True
+                order.cart.save()
+
+                # کسر موجودی محصولات
+                for item in cart.cartitem_set.all():
+                    try:
+                        package = item.package
+                        if hasattr(package, 'quantity'): # Check if package has quantity field
+                            package.quantity -= item.count
+                            # Ensure quantity doesn't go below zero, though validation should prevent this
+                            if package.quantity < 0:
+                                package.quantity = 0
+                            package.save()
+                    except Exception as e:
+                        # Log error if updating quantity fails for an item
+                        print(f"Error updating quantity for package {package.id}: {e}")
+
                 messages.success(request, "سفارش شما با موفقیت ثبت شد")
                 # ارسال به صفحه فاکتور
                 return redirect('order_invoice', order_id=order.id)
@@ -769,7 +783,22 @@ def verify_payment(request):
             # علامت‌گذاری سبد خرید به عنوان پرداخت‌شده
             order.cart.is_paid = True
             order.cart.save()
-            
+
+            # کسر موجودی محصولات
+            cart = order.cart
+            for item in cart.cartitem_set.all():
+                try:
+                    package = item.package
+                    if hasattr(package, 'quantity'): # Check if package has quantity field
+                        package.quantity -= item.count
+                        # Ensure quantity doesn't go below zero
+                        if package.quantity < 0:
+                            package.quantity = 0 
+                        package.save()
+                except Exception as e:
+                    # Log error if updating quantity fails for an item
+                    print(f"Error updating quantity for package {package.id} after online payment: {e}")
+
             # پاک کردن شناسه سفارش از سشن
             if 'order_id' in request.session:
                 del request.session['order_id']
