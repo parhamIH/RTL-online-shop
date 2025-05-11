@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="title-font text-center h2 mb-4"><span class="main-color-one-color">برندهای</span> برتر</h3>
             <p class="text-center text-muted mb-4">محصولات با کیفیت از برندهای معتبر</p>
             <div class="d-flex justify-content-center">
-                <img src="{% static 'assets/img/line.png' %}" height="50" alt="">
+                <img src="{% static 'assets/img/line.png' %}" class="line-image" alt="خط تزئینی">
             </div>
         </div>
         
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="title-font text-center h2 mb-4"><span class="main-color-one-color">دسته‌بندی</span> محصولات</h3>
             <p class="text-center text-muted mb-4">محصول مورد نظر خود را از بین دسته‌بندی‌های متنوع انتخاب کنید</p>
             <div class="d-flex justify-content-center">
-            <img src="{% static 'assets/img/line.png' %}" height="50" alt="">
+            <img src="{% static 'assets/img/line.png' %}" class="line-image" alt="خط تزئینی">
             </div>
         </div>
 
@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- start offer -->
 
-<div class="offers py-5 my-5 bg-light rounded-4 shadow-sm">
+<div class="offers py-5 my-5 rounded-4 shadow-sm" style="background: var(--bg-site);">
     <div class="container-fluid">
         <div class="section-header mb-5">
             <div class="row align-items-center">
@@ -932,7 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- start product boxs -->
 
-<div class="popular-products py-5 bg-light">
+<div class="popular-products py-5" style="background: var(--bg-site);">
     <div class="container-fluid">
         <div class="section-header mb-5">
             <div class="row align-items-center">
@@ -1301,6 +1301,28 @@ document.addEventListener('DOMContentLoaded', function() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
 <!-- end banners -->
+
+<style>
+.section-title .line-image {
+    max-width: 100%;
+    height: auto;
+    width: 277px;
+    max-height: 100px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .section-title .line-image {
+        width: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-title .line-image {
+        width: 150px;
+    }
+}
+</style>
 
 {% endblock main %}
 
