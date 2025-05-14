@@ -190,6 +190,13 @@ def product_detail(request, *args, **kwargs):
         if fav_obj and product in fav_obj.products.all():
             is_favorite = True
 
+    selected_color_id = request.GET.get("color-options")
+    if selected_color_id and selected_color_id.isdigit():
+        selected_color_id = int(selected_color_id)
+        packages = packages.filter(color__id=selected_color_id)
+    else:
+        selected_color_id = None  # به وضوح مقداردهی کن
+
     # مقداردهی اولیه `context`
     context = {
         "categories": categories,
@@ -207,6 +214,8 @@ def product_detail(request, *args, **kwargs):
         "cart_items_json": json.dumps(cart_items_json),  # تبدیل به JSON برای جاوااسکریپت
         'user_favorites': user_favorites,
         'is_favorite': is_favorite,
+        "selected_color_id": selected_color_id,  # ✅ اضافه شد
+
     }
 
     # بررسی درخواست‌های POST
@@ -241,6 +250,7 @@ def product_detail(request, *args, **kwargs):
         return redirect(request.path)  # پس از افزودن به سبد خرید، صفحه رفرش شود
 
     return render(request, "template/product.html", context)
+
 
 def category_products(request, en_name):
     # دریافت دسته‌بندی اصلی
