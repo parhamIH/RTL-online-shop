@@ -70,17 +70,17 @@ html {
 
 :root {
     /* theme color */
-    --main-color-one: #3a3b9c;
+    --main-color-one: #F6D6D6;
     --main-color-one-shadow: #3a3b9c31;
-    --main-color-one-hover: #2a2b82;
-    --main-color-two: #FFD100;
+    --main-color-one-hover: #524646;
+    --main-color-two: #F6D6D6;
     --main-color-two-shadow: #FFD10031;
     --main-color-two-hover: #d8b103;
-    --main-color-three: #45147e;
-    --main-color-three-shadow: #45147e31;
-    --main-color-three-hover: #320a60;
-    --main-color-green: #189D0E;
-    --bg-site: #f4f5f9;
+    --main-color-three: #000000;
+    --main-color-three-shadow: #415576;
+    --main-color-three-hover: #00ccff;
+    --main-color-green: #A1EEBD;
+    --bg-site: #f2b7b7;
     /* typography */
     --font-size: 14px;
     --color-site: #333333;
@@ -179,7 +179,7 @@ input[type=checkbox] {
 }
 
 .content-box {
-    background-color: #fff;
+    background-color: #cd979782;
     box-shadow: var(--shadow-box);
     padding: 20px 0;
     margin-bottom: 20px;
@@ -335,7 +335,7 @@ a {
     background-color: #0967ff13;
     border-bottom: 1px dashed #0761f6;
     padding: 4px 7px;
-    color: #0547b2;
+    color: #6c82a6;
 }
 
 .form-group {
@@ -356,17 +356,17 @@ a {
 }
 
 .main-color-green {
-    background-color: #189D0E;
+    background-color: #7BD3EA;
     color: #fff;
 }
 
 .main-color-green-color {
-    color: #189D0E;
+    color: #A1EEBD;
 }
 
 .main-color-green:hover {
     color: var(--color-site);
-    background-color: #0f7406;
+    background-color: #5a6e59;
 }
 
 .no-highlight {
@@ -857,7 +857,7 @@ textarea {
 
 
 .header-btn .header-cart a span, .header-btn .header-cart a i {
-    color: #fff;
+    color: #000000;
 }
 
 .header-btn .header-cart a i {
@@ -889,7 +889,7 @@ textarea {
 }
 
 .header-btn-login a:hover i {
-    color: #fff;
+    color: #ffffff;
 }
 
 
@@ -910,11 +910,11 @@ textarea {
 }
 
 .header-btn-favorite a:hover {
-    background-color: #FF8A665E;
+    background-color: #ff3c00;
 }
 
 .header-btn-favorite i {
-    color: #f54b12;
+    color: #00000055;
 }
 
 .header-top-menu {
@@ -1079,7 +1079,7 @@ textarea {
     top: 98%;
     right: 0;
     left: 0;
-    background: #f7f7f7;
+    background: #785151;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;

@@ -433,11 +433,13 @@
                                 <h5 class="font-16">انتخاب رنگ کالا</h5>
                                 <div class="product-meta-color-items d-flex flex-wrap gap-2">
                                     {% for color in unique_colors %}
+                                    
                                     <div class="form-check">
                                         <input type="radio" class="form-check-input color-option" 
-                                               name="color-options" id="option{{color.id}}" 
-                                               value="{{color.id}}" onclick="filterSizes('{{color.id}}')" 
-                                               {% if forloop.first %} checked {% endif %}>
+                                             name="color-options" id="option{{color.id}}" 
+                                            value="{{color.id}}" onclick="filterSizes('{{color.id}}')"
+                                            {% if color.id == selected_color_id or forloop.first %} checked {% endif %}>
+
                                         <label class="btn btn-outline-secondary" for="option{{color.id}}">
                                             <span style="background-color: {{color.hex_code}}; width: 15px; height: 15px; display: inline-block; border-radius: 50%;"></span> 
                                             {{color.name}}
@@ -1667,6 +1669,78 @@ function showNotification(message, type) {
         notification.fadeOut(300, function() { $(this).remove(); });
     }, 3000);
 }
+</script>
+
+<script>
+function setPackageId(packageId) {
+    document.getElementById('package-id').value = packageId;
+}
+
+function filterSizes(colorId) {
+    // نمایش loading state
+    const sizeContainer = document.getElementById('size-options-container');
+    sizeContainer.style.opacity = '0.5';
+
+    // درخواست AJAX برای دریافت سایزهای جدید
+    fetch(`/get-sizes/?color_id=${colorId}&product_id={{ product.id }}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.html) {
+            // بروزرسانی container سایزها
+            sizeContainer.innerHTML = data.html;
+            sizeContainer.style.opacity = '1';
+            
+            // انتخاب اولین سایز به صورت خودکار
+            const firstSizeOption = sizeContainer.querySelector('input[type="radio"]');
+            if (firstSizeOption) {
+                firstSizeOption.checked = true;
+                setPackageId(firstSizeOption.value);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        sizeContainer.style.opacity = '1';
+    });
+
+    // به‌روزرسانی URL بدون رفرش صفحه
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("color-options") !== colorId) {
+        params.set("color-options", colorId);
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({ colorId: colorId }, '', newUrl);
+    }
+}
+
+// اجرای فیلتر سایزها برای رنگ پیش‌فرض در لود صفحه
+document.addEventListener('DOMContentLoaded', function() {
+    const defaultColor = document.querySelector('input[name="color-options"]:checked');
+    if (defaultColor) {
+        filterSizes(defaultColor.value);
+    } else {
+        // اگر هیچ رنگی انتخاب نشده، اولین رنگ را انتخاب کن
+        const firstColor = document.querySelector('input[name="color-options"]');
+        if (firstColor) {
+            firstColor.checked = true;
+            filterSizes(firstColor.value);
+        }
+    }
+});
+
+// مدیریت دکمه‌های مرورگر (برگشت/جلو)
+window.addEventListener('popstate', function(event) {
+    if (event.state && event.state.colorId) {
+        const colorInput = document.querySelector(`input[name="color-options"][value="${event.state.colorId}"]`);
+        if (colorInput) {
+            colorInput.checked = true;
+            filterSizes(event.state.colorId);
+        }
+    }
+});
 </script>
 
 <!-- استایل برای اعلان‌ها -->
