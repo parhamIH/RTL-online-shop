@@ -1672,16 +1672,75 @@ function showNotification(message, type) {
 </script>
 
 <script>
-  function filterSizes(colorId) {
+function setPackageId(packageId) {
+    document.getElementById('package-id').value = packageId;
+}
+
+function filterSizes(colorId) {
+    // نمایش loading state
+    const sizeContainer = document.getElementById('size-options-container');
+    sizeContainer.style.opacity = '0.5';
+
+    // درخواست AJAX برای دریافت سایزهای جدید
+    fetch(`/get-sizes/?color_id=${colorId}&product_id={{ product.id }}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.html) {
+            // بروزرسانی container سایزها
+            sizeContainer.innerHTML = data.html;
+            sizeContainer.style.opacity = '1';
+            
+            // انتخاب اولین سایز به صورت خودکار
+            const firstSizeOption = sizeContainer.querySelector('input[type="radio"]');
+            if (firstSizeOption) {
+                firstSizeOption.checked = true;
+                setPackageId(firstSizeOption.value);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        sizeContainer.style.opacity = '1';
+    });
+
+    // به‌روزرسانی URL بدون رفرش صفحه
     const params = new URLSearchParams(window.location.search);
+    if (params.get("color-options") !== colorId) {
+        params.set("color-options", colorId);
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({ colorId: colorId }, '', newUrl);
+    }
+}
 
-    // اگر رنگ فعلی همونه که انتخاب شده، دیگه رفرش نکن
-    if (params.get("color-options") === colorId) return;
+// اجرای فیلتر سایزها برای رنگ پیش‌فرض در لود صفحه
+document.addEventListener('DOMContentLoaded', function() {
+    const defaultColor = document.querySelector('input[name="color-options"]:checked');
+    if (defaultColor) {
+        filterSizes(defaultColor.value);
+    } else {
+        // اگر هیچ رنگی انتخاب نشده، اولین رنگ را انتخاب کن
+        const firstColor = document.querySelector('input[name="color-options"]');
+        if (firstColor) {
+            firstColor.checked = true;
+            filterSizes(firstColor.value);
+        }
+    }
+});
 
-    params.set("color-options", colorId);
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.location.href = newUrl;
-  }
+// مدیریت دکمه‌های مرورگر (برگشت/جلو)
+window.addEventListener('popstate', function(event) {
+    if (event.state && event.state.colorId) {
+        const colorInput = document.querySelector(`input[name="color-options"][value="${event.state.colorId}"]`);
+        if (colorInput) {
+            colorInput.checked = true;
+            filterSizes(event.state.colorId);
+        }
+    }
+});
 </script>
 
 <!-- استایل برای اعلان‌ها -->

@@ -9,6 +9,7 @@ from django.db.models import Count, Q
 from django.views.decorators.csrf import csrf_exempt  # اگر با CSRF مشکل دارید
 from django.contrib.auth.decorators import login_required
 from account.models import Favourite_products
+from django.template.loader import render_to_string
 
 
 
@@ -492,5 +493,25 @@ def static_page(request, slug):
     }
     
     return render(request, "template/static_page.html", context)
+
+def get_sizes_for_color(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        color_id = request.GET.get('color_id')
+        product_id = request.GET.get('product_id')
+        
+        if color_id and product_id:
+            packages = ProductPackage.objects.filter(
+                product_id=product_id,
+                color_id=color_id,
+                is_active_package=True
+            ).select_related('size')
+            
+            html = render_to_string('partials/_size_options.html', {
+                'packages': packages
+            })
+            
+            return JsonResponse({'html': html})
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
