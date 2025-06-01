@@ -33,7 +33,7 @@ function filterSizes(colorId) {
 // تابع جدید برای بروزرسانی قیمت محصول
 function updateProductPrice(packageId) {
     // یافتن المان‌های قیمت
-    const priceElement = $("#product-price");
+    const priceElement = $("#current-product-price");
     
     if (!priceElement.length) {
         console.warn("المان قیمت محصول یافت نشد");

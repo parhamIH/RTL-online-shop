@@ -523,7 +523,7 @@
                                             {{package.price | intcomma }}</p>
                                         {% endif %}
                                         <h6 class="font-30 title-font new-price main-color-one-color"  >
-                                            <span class="font-30 title-font new-price main-color-one-color" id="product-price">
+                                            <span class="font-30 title-font new-price main-color-one-color" id="current-product-price">
                                                 {{package.final_price | intcomma }}
                                             </span>
                                             تومان</h6> 
@@ -1674,6 +1674,8 @@ function showNotification(message, type) {
 <script>
 function setPackageId(packageId) {
     document.getElementById('package-id').value = packageId;
+    // بروزرسانی قیمت محصول با استفاده از packageId
+    updateProductPrice(packageId);
 }
 
 function filterSizes(colorId) {
