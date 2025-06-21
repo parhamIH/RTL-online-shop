@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize' , 
+    #//////////////////// installeds  /////////////////////
     "colorfield",
     'django_jalali',
     'jalali_date',
+    #/////////////////////////////////////
     "shopApp",
     'account',
     "cart",
@@ -189,3 +191,41 @@ ZARINPAL_SETTINGS = {
     'MERCHANT_ID': '3882d03e-1962-47ed-aad9-26d669f08bb2',  # مرچنت کد تستی زرین پال
     'SANDBOX': True,  # در محیط توسعه True و در محیط واقعی False
 }
+
+# securty configs
+
+# ----------------------
+# ✅ امنیت ارتباط و HTTPS
+# ----------------------
+# تنظیمات امنیتی برای محیط توسعه و تولید
+if DEBUG:
+    # تنظیمات محیط توسعه
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_PROXY_SSL_HEADER = None
+    USE_X_FORWARDED_HOST = False
+    USE_X_FORWARDED_PORT = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+else:
+    # تنظیمات محیط تولید
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# تنظیمات امنیتی پایه که در هر دو محیط فعال هستند
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# تنظیمات HSTS - غیرفعال در محیط توسعه
+# SECURE_HSTS_SECONDS = None
+
