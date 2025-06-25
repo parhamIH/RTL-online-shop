@@ -846,6 +846,7 @@ def order_invoice(request, order_id):
         total_price = sum(item.get_price() * item.count for item in cart_items)
         total_discount = sum((item.package.price - item.get_price()) * item.count for item in cart_items if item.package.price > item.get_price())
         
+        
         # اطلاعات فروشگاه (می‌توانید از تنظیمات سایت دریافت کنید)
         store_info = {
             'name': 'فروشگاه آنلاین شاهان',
