@@ -259,6 +259,91 @@
         50% { transform: scale(1.2); color: #ff6b6b; }
         100% { transform: scale(1); }
     }
+
+    /* استایل‌های مشخصات محصول */
+    .specifications-container {
+        margin-top: 2rem;
+    }
+
+    .main-specifications {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .specification-item {
+        background: white;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef !important;
+    }
+
+    .specification-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .spec-name {
+        color: #495057;
+        font-size: 0.95rem;
+    }
+
+    .spec-value {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .specification-group {
+        margin-bottom: 2rem;
+    }
+
+    .specification-group .box_list {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .specification-group .title {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px 8px 0 0;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .specification-group .title svg {
+        margin-left: 0.5rem;
+    }
+
+    .empty-specifications {
+        padding: 3rem 1rem;
+    }
+
+    .empty-specifications i {
+        opacity: 0.5;
+    }
+
+    /* استایل برای badge های بله/خیر */
+    .badge.bg-success {
+        background-color: #28a745 !important;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .badge.bg-danger {
+        background-color: #dc3545 !important;
+        color: white;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    /* استایل برای آیکون مشخصه اصلی */
+    .bi-star-fill.text-warning {
+        color: #ffc107 !important;
+        font-size: 0.8rem;
+    }
 </style>
 
 <div class="bread-crumb py-4">
@@ -969,229 +1054,113 @@
                                     <div class="tab-pane fade active show"
                                          role="tabpanel" aria-labelledby="#productTable">
                                         <h6 class="font-26 mb-2 title-font">مشخصات فنی</h6>
-                                        <div class="box_list mt-4">
-                                            <p class="title"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                  height="16" fill="currentColor"
-                                                                  class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                                                <path
-                                                        d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z">
-                                                </path>
-                                            </svg>مشخصات کلی</p>
-                                            <div>
-                                                <ul class="param_list list-inline">
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت پخش موسیقی
+                                        
+                                        <!-- نمایش مشخصات اصلی محصول -->
+                                        {% if product_specifications %}
+                                            <div class="specifications-container">
+                                                <!-- مشخصات اصلی -->
+                                                <div class="main-specifications mb-4">
+                                                    <h6 class="font-20 mb-3 title-font text-primary">
+                                                        <i class="bi bi-star-fill me-2"></i>مشخصات اصلی
+                                                    </h6>
+                                                    <div class="row">
+                                                        {% for spec_value in product_specifications %}
+                                                            {% if spec_value.is_main %}
+                                                                <div class="col-md-6 mb-3">
+                                                                    <div class="specification-item p-3 border rounded">
+                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                            <span class="spec-name font-weight-bold">{{ spec_value.specification.name }}</span>
+                                                                            <span class="spec-value">
+                                                                                {% if spec_value.specification.data_type == 'int' %}
+                                                                                    {{ spec_value.int_value }}
+                                                                                {% elif spec_value.specification.data_type == 'decimal' %}
+                                                                                    {{ spec_value.decimal_value }}
+                                                                                {% elif spec_value.specification.data_type == 'str' %}
+                                                                                    {{ spec_value.str_value }}
+                                                                                {% elif spec_value.specification.data_type == 'bool' %}
+                                                                                    {% if spec_value.bool_value %}
+                                                                                        <span class="badge bg-success">بله</span>
+                                                                                    {% else %}
+                                                                                        <span class="badge bg-danger">خیر</span>
+                                                                                    {% endif %}
+                                                                                {% endif %}
+                                                                                {% if spec_value.specification.unit %}
+                                                                                    <small class="text-muted ms-1">{{ spec_value.specification.unit }}</small>
+                                                                                {% endif %}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+
+                                                <!-- گروه‌بندی مشخصات بر اساس دسته‌بندی -->
+                                                {% regroup product_specifications by specification.category as spec_groups %}
+                                                {% for spec_group in spec_groups %}
+                                                    <div class="specification-group mb-4">
+                                                        <div class="box_list">
+                                                            <p class="title">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                                                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
+                                                                </svg>
+                                                                {{ spec_group.grouper.name }}
                                                             </p>
+                                                            <div>
+                                                                <ul class="param_list list-inline">
+                                                                    {% for spec_value in spec_group.list %}
+                                                                        {% if not spec_value.is_main %}
+                                                                            <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
+                                                                                <div class="box_params_list">
+                                                                                    <p class="block border_right_custom1">
+                                                                                        {{ spec_value.specification.name }}
+                                                                                        {% if spec_value.specification.is_main %}
+                                                                                            <i class="bi bi-star-fill text-warning ms-1" title="مشخصه اصلی"></i>
+                                                                                        {% endif %}
+                                                                                    </p>
+                                                                                </div>
+                                                                            </li>
+                                                                            <li class="list-inline-item col-md-8 p-0 m-0">
+                                                                                <div class="box_params_list">
+                                                                                    <p class="block border_right_custom2">
+                                                                                        {% if spec_value.specification.data_type == 'int' %}
+                                                                                            {{ spec_value.int_value }}
+                                                                                        {% elif spec_value.specification.data_type == 'decimal' %}
+                                                                                            {{ spec_value.decimal_value }}
+                                                                                        {% elif spec_value.specification.data_type == 'str' %}
+                                                                                            {{ spec_value.str_value }}
+                                                                                        {% elif spec_value.specification.data_type == 'bool' %}
+                                                                                            {% if spec_value.bool_value %}
+                                                                                                <span class="badge bg-success">بله</span>
+                                                                                            {% else %}
+                                                                                                <span class="badge bg-danger">خیر</span>
+                                                                                            {% endif %}
+                                                                                        {% endif %}
+                                                                                        {% if spec_value.specification.unit %}
+                                                                                            <small class="text-muted ms-1">{{ spec_value.specification.unit }}</small>
+                                                                                        {% endif %}
+                                                                                    </p>
+                                                                                </div>
+                                                                            </li>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
                                                         </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                دارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت کنترل صدا و موزیک
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                راهنمایی صوتی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
+                                                    </div>
+                                                {% endfor %}
                                             </div>
-                                        </div>
-                                        <div class="box_list mt-4">
-                                            <p class="title"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                  height="16" fill="currentColor"
-                                                                  class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                                                <path
-                                                        d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z">
-                                                </path>
-                                            </svg>مشخصات کلی</p>
-                                            <div>
-                                                <ul class="param_list list-inline">
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت پخش موسیقی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                دارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت کنترل صدا و موزیک
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li
-                                                            class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                راهنمایی صوتی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
+                                        {% else %}
+                                            <!-- اگر مشخصاتی وجود ندارد -->
+                                            <div class="text-center py-5">
+                                                <div class="empty-specifications">
+                                                    <i class="bi bi-info-circle text-muted" style="font-size: 3rem;"></i>
+                                                    <h6 class="text-muted mt-3">هنوز مشخصاتی برای این محصول ثبت نشده است</h6>
+                                                    <p class="text-muted">مشخصات فنی این محصول به زودی اضافه خواهد شد.</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="box_list mt-4">
-                                            <p class="title"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                  height="16" fill="currentColor"
-                                                                  class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                                                <path
-                                                        d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z">
-                                                </path>
-                                            </svg>مشخصات کلی</p>
-                                            <div>
-                                                <ul class="param_list list-inline">
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت پخش موسیقی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                دارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت کنترل صدا و موزیک
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li
-                                                            class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                راهنمایی صوتی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="box_list mt-4">
-                                            <p class="title"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                  height="16" fill="currentColor"
-                                                                  class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                                                <path
-                                                        d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z">
-                                                </path>
-                                            </svg>مشخصات کلی</p>
-                                            <div>
-                                                <ul class="param_list list-inline">
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت پخش موسیقی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                دارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                قابلیت کنترل صدا و موزیک
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li
-                                                            class="list-inline-item col-md-3 pe-md-1 pe-md-3 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom1">
-                                                                راهنمایی صوتی
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li class="list-inline-item col-md-8 p-0 m-0">
-                                                        <div class="box_params_list">
-                                                            <p class="block border_right_custom2">
-                                                                ندارد
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="tab-pane fade product-comment-content" id="productComment-pane">

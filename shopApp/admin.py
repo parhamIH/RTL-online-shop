@@ -168,8 +168,14 @@ class ProductPackageInline(admin.TabularInline):
     readonly_fields = ('final_price',)
 
 
+class ProductSpecificationInline(admin.TabularInline):
+    model = ProductSpecification
+    extra = 1
+    fields = ('specification', 'int_value', 'decimal_value', 'str_value', 'bool_value', 'is_main')
+
+
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductPackageInline, GalleryInline]
+    inlines = [ProductPackageInline, GalleryInline, ProductSpecificationInline]
     
     def get_categories(self, obj):
         return ", ".join([category.name for category in obj.categories.all()])
@@ -334,6 +340,40 @@ class StaticPageAdmin(admin.ModelAdmin):
     )
 
 
+class SpecificationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'data_type', 'unit', 'is_main', 'slug')
+    list_filter = ('category', 'data_type', 'is_main')
+    search_fields = ('name', 'slug')
+    list_editable = ('is_main', 'unit')
+    prepopulated_fields = {'slug': ('name',)}
+    
+    fieldsets = (
+        ("اطلاعات مشخصه", {"fields": ("name", "slug", "category", "data_type")}),
+        ("تنظیمات", {"fields": ("unit", "is_main")}),
+    )
+
+
+class ProductSpecificationAdmin(admin.ModelAdmin):
+    list_display = ('product', 'specification', 'get_value', 'is_main')
+    list_filter = ('product', 'specification__category', 'is_main')
+    search_fields = ('product__name', 'specification__name')
+    list_editable = ('is_main',)
+    
+    def get_value(self, obj):
+        value = obj.value()
+        if value is not None:
+            unit = f" {obj.specification.unit}" if obj.specification.unit else ""
+            return f"{value}{unit}"
+        return "بدون مقدار"
+    get_value.short_description = 'مقدار'
+    
+    fieldsets = (
+        ("محصول و مشخصه", {"fields": ("product", "specification")}),
+        ("مقادیر", {"fields": ("int_value", "decimal_value", "str_value", "bool_value")}),
+        ("تنظیمات", {"fields": ("is_main",)}),
+    )
+
+
 # Register your models here.
 admin.site.register(ProductPackage, ProductPackageAdmin)
 admin.site.register(Product, ProductAdmin)
@@ -350,3 +390,5 @@ admin.site.register(PromotionalBanner, PromotionalBannerAdmin)
 admin.site.register(FeaturedBrand, FeaturedBrandAdmin)
 admin.site.register(SiteSettings, SiteSettingsAdmin)
 admin.site.register(StaticPage, StaticPageAdmin)
+admin.site.register(Specification, SpecificationAdmin)
+admin.site.register(ProductSpecification, ProductSpecificationAdmin)

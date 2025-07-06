@@ -140,6 +140,9 @@ def product_detail(request, *args, **kwargs):
     # حذف بسته‌هایی که نامعتبرند
     packages = packages.exclude(quantity__lte=0, is_active_package=False)
 
+    # دریافت مشخصات محصول
+    product_specifications = ProductSpecification.objects.filter(product=product).select_related('specification', 'specification__category')
+
 
     more_products = ProductPackage.objects.filter(
         product__categories__in=categories
@@ -216,6 +219,7 @@ def product_detail(request, *args, **kwargs):
         'user_favorites': user_favorites,
         'is_favorite': is_favorite,
         "selected_color_id": selected_color_id,  # ✅ اضافه شد
+        "product_specifications": product_specifications,  # ✅ اضافه شد
 
     }
 

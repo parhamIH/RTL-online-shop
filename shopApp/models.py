@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from PIL import Image  # pillow
 from colorfield.fields import ColorField
 from model_utils import FieldTracker  # Add this import
+from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -471,6 +473,92 @@ class StaticPage(models.Model):
         
     def __str__(self):
         return self.title
+
+
+#__________________________________________ ------specification------ _______________________________________   
+class Specification(models.Model):  # add icon field  and is main field 
+    DATA_TYPE_CHOICES = [
+        ('int', 'عدد صحیح'),
+        ('decimal', 'عدد اعشاری'),
+        ('str', 'متن'),
+        ('bool', 'بله/خیر'),
+    ]
+
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='spec_definitions', verbose_name='دسته‌بندی')
+    name = models.CharField(max_length=100, verbose_name='نام مشخصه')
+    slug = models.SlugField(max_length=120, unique=True, allow_unicode=True, blank=True)
+    data_type = models.CharField(max_length=20, choices=DATA_TYPE_CHOICES, verbose_name='نوع داده')
+    unit = models.CharField(max_length=30, blank=True, null=True, verbose_name='واحد')
+    is_main = models.BooleanField(default=False, verbose_name='مشخصه اصلی' , help_text='مشخصه اصلی برای محصولات است')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+            counter = 1
+            while Specification.objects.filter(slug=self.slug).exists():
+                self.slug = f"{slugify(self.name, allow_unicode=True)}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.category.name} - {self.name} ({self.get_data_type_display()})"
+
+    class Meta:
+        verbose_name = 'مشخصه'
+        verbose_name_plural = 'مشخصات'
+        unique_together = ['category', 'name']
+
+
+#__________________________________________ ------product specification------ _______________________________________
+class ProductSpecification(models.Model): # is main field 
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='spec_values', verbose_name='محصول')
+    specification = models.ForeignKey(Specification, on_delete=models.CASCADE, related_name='values', verbose_name='مشخصه')
+    int_value = models.IntegerField(blank=True, null=True, verbose_name='مقدار عددی')
+    decimal_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='مقدار اعشاری')
+    str_value = models.CharField(max_length=255, blank=True, null=True, verbose_name='مقدار متنی')
+    bool_value = models.BooleanField(blank=True, null=True, verbose_name='مقدار بله/خیر')
+    is_main = models.BooleanField(default=False, verbose_name='مشخصه اصلی' , help_text='مشخصه اصلی برای محصول است')
+
+
+    def clean(self):
+        # Ensure only one value field is set based on specification's data_type
+        filled_values = [
+            bool(self.int_value is not None),
+            bool(self.decimal_value is not None),
+            bool(self.str_value),
+            bool(self.bool_value is not None)
+        ]
+
+        if self.specification.data_type == 'int' and self.int_value is None:
+            raise ValidationError('برای مشخصه عددی صحیح باید مقدار عددی وارد شود')
+        elif self.specification.data_type == 'decimal' and self.decimal_value is None:
+            raise ValidationError('برای مشخصه اعشاری باید مقدار اعشاری وارد شود')
+        elif self.specification.data_type == 'str' and not self.str_value:
+            raise ValidationError('برای مشخصه متنی باید مقدار متنی وارد شود')
+        elif self.specification.data_type == 'bool' and self.bool_value is None:
+            raise ValidationError('برای مشخصه بله/خیر باید مقدار بله/خیر وارد شود')
+
+    def value(self):
+        """Return the appropriate value based on specification's data_type"""
+        if self.specification.data_type == 'int':
+            return self.int_value
+        elif self.specification.data_type == 'decimal':
+            return self.decimal_value
+        elif self.specification.data_type == 'str':
+            return self.str_value
+        elif self.specification.data_type == 'bool':
+            return self.bool_value
+        return None
+
+    def __str__(self):
+        value = self.value()
+        unit = f" {self.specification.unit}" if self.specification.unit else ""
+        return f"{self.product.name} - {self.specification.name}: {value}{unit}"
+
+    class Meta:
+        verbose_name = 'مقدار مشخصه محصول'
+        verbose_name_plural = 'مقادیر مشخصات محصول'
+        unique_together = ['product', 'specification']
 
 
     
