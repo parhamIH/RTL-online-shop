@@ -558,13 +558,6 @@
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class=" waves-effect waves-light" id="productDesc"
-                            data-bs-toggle="tab" data-bs-target="#productDesc-pane" role="button"
-                            type="button" aria-selected="true">
-                        مشخصات کالا
-                    </button>
-                </li>
-                <li class="nav-item">
                     <button class=" waves-effect waves-light" id="productTable"
                             data-bs-toggle="tab" data-bs-target="#productTable-pane" role="button"
                             type="button" aria-selected="false">
@@ -584,6 +577,7 @@
             <div class="container-fluid">
                 <div class="product-descs" id="prodesc">
                     <div class="product-desc">
+                        
                         <div class="product-desc-tab-content">
                             <div class="tab-content" id="productTabContent">
                                 <div class="tab-pane fade show active product-desc-less-contents"
@@ -593,39 +587,10 @@
                                         <!-- والد بیشتر ، کمتر ، تمام متن توضیحات باید داخل این تگ قرار بگیرند -->
                                         <div class="read-more-wrap">
                                             <h6 class="font-22 mb-2 title-font">معرفی محصول</h6>
-
-                                            <p>
-                                                اگر به دنبال تهیه یک هدفون بی‌سیم گیمینگ هستید، هدفون
-                                                بلوتوثی مدل K55
-                                                به‌عنوان
-                                                یکی از جدیدترین گزینه‌های موجود در بازار ارزش بررسی را
-                                                دارد. این مدل با
-                                                ابعادی
-                                                کوچک تولید شده است. ابعاد و وزن کم آن، جابه‌جایی این
-                                                وسیله و استفاده
-                                                طولانی‌مدت
-                                                از آن را آسان می‌کند و باعث خستگی گوش‌ها نخواهد شد. این
-                                                مدل برای اتصال
-                                                به
-                                                دستگاه‌ به بلوتوث نسخه 5.0 مجهز شده است و در مدت زمان
-                                                اندکی، اتصال با
-                                                گوشی
-                                                موبایل اندروید یا ios شما برقرار خواهد شد. هدفون بی سیم
-                                                K55 دارای یک
-                                                میکروفون با
-                                                کیفیت است و ...
-                                            </p>
-
-                                            <!-- متن بیشتر -->
+                                            {{product.description }}                                            <!-- متن بیشتر -->
                                             <div class="read-more-target">
                                                 <p>
-                                                    و این ویژگی، آن را برای مکالمه مناسب می‌سازد. از ویژگی‌های
-                                                    اصلی این محصول محفظه نگهدارنده یا همان کیس آن است. این کیس
-                                                    قابلیت شارژ هدفون را دارد. برای شارژ آن کافی است از درگاه
-                                                    USB-C تعبیه شده بر روی کیس و کابل شارژ درون بسته‌بندی
-                                                    استفاده کنید. گفتنی است باتری 400 میلی‌آمپر ساعتی این هدفون
-                                                    در حدود 4-6 ساعت مکالمه و 4-6 ساعت پخش موسیقی را پاسخ‌گو
-                                                    خواهد بود.
+                                                    {{product.description }}
                                                 </p>
                                             </div>
                                             <!-- پایان متن بیشتر -->
@@ -1528,12 +1493,12 @@
                     </div>
                     {% endfor %}
 
-
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-
+                    
+                </div>
+                
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
             </div>
-        </div>
 
         <div class="text-center">
             <button class="amazing-offer-btn" data-scroll-to="#banners"></button>
