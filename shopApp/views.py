@@ -200,7 +200,7 @@ def product_detail(request, *args, **kwargs):
         packages = packages.filter(color__id=selected_color_id)
     else:
         selected_color_id = None  # به وضوح مقداردهی کن
-
+    print("\n\n\n\n\n dashchagh",product_specifications,"\n\n\n\n\n")
     # مقداردهی اولیه `context`
     context = {
         "categories": categories,
