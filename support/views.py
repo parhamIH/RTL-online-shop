@@ -12,6 +12,8 @@ from django.views.decorators.http import require_POST
 from support.models import SupportTicket, TicketReply
 from django.contrib.auth.models import User
 from django.db import models
+from sms import send_sms  # فرض بر این است که چنین utility دارید
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 
@@ -62,6 +64,9 @@ def support(request):
                     notification_type='info',
                     is_read=False
                 )
+            
+            # ارسال SMS بعد از ثبت تیکت
+            send_sms(request.user.profile.phone_number, f"تیکت شما با موضوع '{subject}' ثبت شد و به زودی بررسی می‌شود.")
             
             context['success_message'] = 'درخواست پشتیبانی شما با موفقیت ثبت شد.'
             
@@ -122,6 +127,9 @@ def support_ajax(request):
         
         # شمارش تعداد اعلان‌های خوانده نشده
         unread_count = Notification.objects.filter(user=request.user, is_read=False).count()
+        
+        # ارسال SMS بعد از ثبت تیکت
+        send_sms(request.user.profile.phone_number, f"تیکت شما با موضوع '{subject}' ثبت شد و به زودی بررسی می‌شود.")
         
         return JsonResponse({
             'status': 'success',
@@ -188,6 +196,9 @@ def close_ticket(request, ticket_id):
                     is_read=False
                 )
             
+            # ارسال SMS بعد از بسته شدن تیکت
+            send_sms(request.user.profile.phone_number, f"تیکت با موضوع '{ticket.subject}' بسته شد.")
+            
             return redirect('view_ticket', ticket_id=ticket.id)
         else:
             # اگر تیکت قبلاً بسته شده باشد
@@ -245,6 +256,9 @@ def add_reply(request, ticket_id):
                 notification_type='info',
                 is_read=False
             )
+            
+            # ارسال SMS بعد از ثبت پاسخ توسط ادمین
+            send_sms(ticket.user.profile.phone_number, f"پاسخ جدیدی برای تیکت '{ticket.subject}' دریافت کردید.")
         else:
             # اگر پاسخ دهنده کاربر عادی باشد، به ادمین‌ها اعلان ارسال شود
             admin_users = User.objects.filter(is_staff=True)
@@ -367,3 +381,19 @@ def admin_tickets(request):
     context['search_query'] = search_query
     
     return render(request, "template/admin_tickets.html", context)
+
+@staff_member_required
+def send_custom_sms(request):
+    context = {}
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        text = request.POST.get('text')
+        if phone and text:
+            success, response = send_sms(phone, text)
+            if success:
+                context['success'] = 'پیامک با موفقیت ارسال شد.'
+            else:
+                context['error'] = f'خطا در ارسال پیامک: {response}'
+        else:
+            context['error'] = 'شماره و متن پیامک الزامی است.'
+    return render(request, 'template/send_sms.html', context)
