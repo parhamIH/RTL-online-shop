@@ -51,3 +51,6 @@ def is_verification_code_expired(created_at, expiry_minutes=2):
     
     # مقایسه با زمان فعلی
     return now > expiry_time 
+
+def send_sms (phone_number -> string ,  text -> string):
+    ...
