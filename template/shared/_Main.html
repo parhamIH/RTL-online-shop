@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>قالب شاهان</title>
+    <title>{% block title %}fatima accessories {% endblock %}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -19,6 +19,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'assets/img/android-chrome-192x192.png' %}">
     
     <!-- Place favicon.ico in the root directory -->
     
@@ -380,7 +381,11 @@
 
 <!-- end header code -->
 
-
+<!-- پیام اطلاع‌رسانی درباره وضعیت پرداخت -->
+<div style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 6px; padding: 16px; margin: 20px 0; text-align: center; font-size: 1.1em;">
+    <strong>توجه:</strong>
+    درگاه پرداخت سایت فعلاً در حالت آزمایشی (Sandbox) قرار دارد و امکان خرید به‌زودی فعال خواهد شد.
+</div>
 
 {% block main %}
 

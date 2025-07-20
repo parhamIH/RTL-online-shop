@@ -1,7 +1,8 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from .models import SupportTicket, TicketReply
 
-class TicketReplyInline(admin.TabularInline):
+class TicketReplyInline(TabularInline):
     model = TicketReply
     extra = 0
     readonly_fields = ('created_at',)
@@ -11,8 +12,7 @@ class TicketReplyInline(admin.TabularInline):
         }),
     )
 
-@admin.register(SupportTicket)
-class SupportTicketAdmin(admin.ModelAdmin):
+class SupportTicketAdmin(ModelAdmin):
     list_display = ('id', 'subject', 'user', 'department', 'priority', 'status', 'created_at', 'updated_at')
     list_filter = ('status', 'department', 'priority', 'created_at')
     search_fields = ('subject', 'message', 'user__username', 'user__email')
@@ -53,8 +53,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
                 is_read=False
             )
 
-@admin.register(TicketReply)
-class TicketReplyAdmin(admin.ModelAdmin):
+class TicketReplyAdmin(ModelAdmin):
     list_display = ('id', 'ticket', 'user', 'is_staff_reply', 'created_at')
     list_filter = ('is_staff_reply', 'created_at')
     search_fields = ('message', 'user__username', 'ticket__subject')

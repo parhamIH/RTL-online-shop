@@ -20,7 +20,7 @@ def send_verification_sms(phone_number, code):
         params = {
             'receptor': phone_number,
             'sender': KAVENEGAR_SENDER,
-            'message': f"کد تایید شما: {code} \n اسم فروشگاه",  # فقط کد تأیید را ارسال می‌کنیم
+            'message': f"کد تایید شما: {code} \n fatiima_accessories \n  instagram :https://www.instagram.com/fatiima_accessories/ ",  # فقط کد تأیید را ارسال می‌کنیم
             'type': 'sms'
         }
         response = api.sms_send(params)
@@ -52,5 +52,25 @@ def is_verification_code_expired(created_at, expiry_minutes=2):
     # مقایسه با زمان فعلی
     return now > expiry_time 
 
-def send_sms (phone_number -> string ,  text -> string):
-    ...
+def send_sms(phone_number, message):
+    """ارسال پیامک دلخواه به شماره تلفن کاربر"""
+    try:
+        api = KavenegarAPI(KAVENEGAR_API_KEY)
+        params = {
+            'receptor': phone_number,
+            'sender': KAVENEGAR_SENDER,
+            'message': message,
+            'type': 'sms'
+        }
+        response = api.sms_send(params)
+        print(f"SMS sent to {phone_number}: {message}")
+        return True, response
+    except APIException as e:
+        print(f"API Exception: {str(e)}")
+        return False, str(e)
+    except HTTPException as e:
+        print(f"HTTP Exception: {str(e)}")
+        return False, str(e)
+    except Exception as e:
+        print(f"General Exception: {str(e)}")
+        return False, str(e) 

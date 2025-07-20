@@ -1,18 +1,18 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from django.contrib.auth.models import User
 from .models import ClientAddress, Profile, Notification, Favourite_products
 
-class ProfileInline(admin.StackedInline):
+class ProfileInline(StackedInline):
     model = Profile
     can_delete = False
     verbose_name_plural = 'پروفایل'
     verbose_name = 'پروفایل'
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(ModelAdmin):
     inlines = (ProfileInline,)
 
-class ClientAddressAdmin(admin.ModelAdmin):
+class ClientAddressAdmin(ModelAdmin):
     list_display = ('user', 'title_address', 'province', 'city', 'postcode')
     list_filter = ('province', 'city')
     search_fields = ('user__username', 'user__email', 'province', 'city', 'postcode', 'full_address')
@@ -26,7 +26,7 @@ class ClientAddressAdmin(admin.ModelAdmin):
         }),
     )
 
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(ModelAdmin):
     list_display = ('user', 'phone_number', 'is_phone_verified')
     list_filter = ('is_phone_verified',)
     search_fields = ('user__username', 'user__email', 'phone_number')
@@ -40,7 +40,7 @@ class ProfileAdmin(admin.ModelAdmin):
         }),
     )
 
-class NotificationAdmin(admin.ModelAdmin):
+class NotificationAdmin(ModelAdmin):
     list_display = ('user', 'title', 'notification_type', 'is_read', 'created_at')
     list_filter = ('notification_type', 'is_read', 'created_at')
     search_fields = ('user__username', 'title', 'message')

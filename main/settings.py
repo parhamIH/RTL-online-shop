@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from django.templatetags.static import static
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,18 +26,20 @@ SECRET_KEY = 'django-insecure-+3de5-7n=)wez3lmrwck17lnd4fz5r=si=uzs4*fja4*9hl-mr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fatiimaa.ir', '.fatiimaa.ir', '*' ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    
+    "unfold",  # before django.contrib.admin
+    "django.contrib.admin",
+    "django.contrib.contenttypes",  # <-- added as required by Django
+    "django.contrib.auth",  # <-- add this line
+    "django.contrib.messages",  # <-- add this line
+    "django.contrib.sessions",  # <-- add this line
+    "django.contrib.staticfiles",
     'django.contrib.humanize' , 
     #//////////////////// installeds  /////////////////////
     "colorfield",
@@ -49,7 +52,16 @@ INSTALLED_APPS = [
     'adminpanel',
     "support",
     "articles",
+    #-----them
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
+    "unfold.contrib.location_field",  # optional, if django-location-field package is used
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -228,4 +240,34 @@ X_FRAME_OPTIONS = 'DENY'
 
 # تنظیمات HSTS - غیرفعال در محیط توسعه
 # SECURE_HSTS_SECONDS = None
+
+
+
+
+UNFOLD = {
+    "SITE_TITLE": "پنل مدیریت فاطیما",
+    "SITE_HEADER": "پنل مدیریت فاطیما",
+    "SITE_LOGO": {
+        "light": lambda request: static("assets/img/logo.png"),
+        "dark": lambda request: static("assets/img/logo.png"),
+    },
+    "SITE_SYMBOL": "star",  # نماد ستاره
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "sizes": "32x32",
+            "type": "image/png",
+            "href": lambda request: static("assets/img/favicon.png"),
+        },
+        {
+            "rel": "icon",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "href": lambda request: static("assets/img/favicon.svg"),
+        },
+    ],
+    "SHOW_HISTORY": True,
+    "SHOW_BACK_BUTTON": False,
+    "STYLES": [lambda request: static("assets/css/admin-logo.css")],
+}
 

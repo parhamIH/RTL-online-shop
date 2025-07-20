@@ -10,6 +10,9 @@ from django.views.decorators.csrf import csrf_exempt  # اگر با CSRF مشک�
 from django.contrib.auth.decorators import login_required
 from account.models import Favourite_products
 from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404, redirect
+from .models import Product
+from django.utils.text import slugify
 
 
 

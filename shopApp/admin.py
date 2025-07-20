@@ -1,14 +1,15 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from .models import *
 from django.utils.html import format_html
 
 
-class GalleryInline(admin.TabularInline):
+class GalleryInline(TabularInline):
     model = Gallery
     extra = 1
 
 
-class GalleryAdmin(admin.ModelAdmin):
+class GalleryAdmin(ModelAdmin):
     list_display = ["product", 'image_preview']
     list_display_links = ("product",)
     list_filter = ("product",)
@@ -25,7 +26,7 @@ class GalleryAdmin(admin.ModelAdmin):
     )
 
 
-class SizeAdmin(admin.ModelAdmin):
+class SizeAdmin(ModelAdmin):
     list_display = ('size', 'size_numrical', 'category')
     search_fields = ('size', 'size_numrical')
     list_filter = ('category',)
@@ -36,7 +37,7 @@ class SizeAdmin(admin.ModelAdmin):
     )
 
 
-class CommentAdmin(admin.ModelAdmin):
+class CommentAdmin(ModelAdmin):
     readonly_fields = ("created_at",)
     list_display = ("product", "user", "created_at", "text_preview", "rating", "is_approved")
     list_display_links = ("product",)
@@ -57,7 +58,7 @@ class CommentAdmin(admin.ModelAdmin):
     )
 
 
-class BaseCategorysAdmin(admin.ModelAdmin):
+class BaseCategorysAdmin(ModelAdmin):
     list_display = ("name", "en_name", "get_brands", "image_preview")
     list_filter = ("en_name", "name")
     ordering = ("name",)
@@ -82,7 +83,7 @@ class BaseCategorysAdmin(admin.ModelAdmin):
     get_brands.short_description = 'برندها'
 
 
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdmin):
     list_filter = ("parent", "base_catgory", "name")
     ordering = ("parent",)
     list_display = ("parent", "name", "en_name", "base_catgory", "image_preview")
@@ -102,7 +103,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
 
-class BrandAdmin(admin.ModelAdmin):
+class BrandAdmin(ModelAdmin):
     list_filter = ("category", "name")
     ordering = ("en_name",)
     list_editable = ("name",)
@@ -123,7 +124,7 @@ class BrandAdmin(admin.ModelAdmin):
     )
 
 
-class BaseColorAdmin(admin.ModelAdmin):
+class BaseColorAdmin(ModelAdmin):
     list_display = ('name', 'color_preview')
     search_fields = ('name',)
     
@@ -138,7 +139,7 @@ class BaseColorAdmin(admin.ModelAdmin):
     )
 
 
-class ColorAdmin(admin.ModelAdmin):
+class ColorAdmin(ModelAdmin):
     list_filter = ("base_color",)
     list_display = ("name", "hex_code", "hex_preview", "base_color", "image_preview")
     list_editable = ("hex_code",)
@@ -161,20 +162,20 @@ class ColorAdmin(admin.ModelAdmin):
     )
 
 
-class ProductPackageInline(admin.TabularInline):
+class ProductPackageInline(TabularInline):
     model = ProductPackage
     extra = 1
     fields = ('size', 'brand', 'color', 'quantity', 'price', 'discount', 'is_active_discount', 'is_active_package', 'final_price')
     readonly_fields = ('final_price',)
 
 
-class ProductSpecificationInline(admin.TabularInline):
+class ProductSpecificationInline(TabularInline):
     model = ProductSpecification
     extra = 1
     fields = ('specification', 'int_value', 'decimal_value', 'str_value', 'bool_value', 'is_main')
 
 
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ModelAdmin):
     inlines = [ProductPackageInline, GalleryInline, ProductSpecificationInline]
     
     def get_categories(self, obj):
@@ -205,7 +206,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
 
-class ProductPackageAdmin(admin.ModelAdmin): 
+class ProductPackageAdmin(ModelAdmin): 
     list_display = ('product', 'size', 'brand', 'color', 'quantity', 'price', 'discount', 'final_price', 'is_active_discount', "is_active_package", "sold_count")
     search_fields = ('product__name', 'brand__name', 'color__name')
     list_filter = ('product', 'size', 'brand', 'is_active_discount', "is_active_package")
@@ -232,7 +233,7 @@ class ProductPackageAdmin(admin.ModelAdmin):
     )
 
 
-class HomeSliderAdmin(admin.ModelAdmin):
+class HomeSliderAdmin(ModelAdmin):
     list_display = ('title', 'active', 'order', 'image_preview')
     list_filter = ('active',)
     list_editable = ('active', 'order')
@@ -257,7 +258,7 @@ class HomeSliderAdmin(admin.ModelAdmin):
     )
 
 
-class PromotionalBannerAdmin(admin.ModelAdmin):
+class PromotionalBannerAdmin(ModelAdmin):
     list_display = ('title', 'position', 'size', 'active', 'order', 'image_preview')
     list_filter = ('active', 'position', 'size')
     list_editable = ('active', 'order', 'position', 'size')
@@ -285,7 +286,7 @@ class PromotionalBannerAdmin(admin.ModelAdmin):
     )
 
 
-class FeaturedBrandAdmin(admin.ModelAdmin):
+class FeaturedBrandAdmin(ModelAdmin):
     list_display = ('brand', 'active', 'order', 'logo_preview')
     list_filter = ('active', 'brand')
     list_editable = ('active', 'order')
@@ -297,8 +298,8 @@ class FeaturedBrandAdmin(admin.ModelAdmin):
     logo_preview.short_description = 'لوگو'
 
 
-class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ('site_name', 'email', 'phone')
+class SiteSettingsAdmin(ModelAdmin):
+    list_display = ('site_name', 'email', 'phone', 'logo_preview')
     
     fieldsets = (
         ('اطلاعات اصلی سایت', {
@@ -321,8 +322,21 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         }),
     )
 
+    def logo_preview(self, obj):
+        if obj.logo:
+            return format_html('<img src="{}" width="120" style="border:1px solid #ccc;" />', obj.logo.url)
+        return "بدون لوگو"
+    logo_preview.short_description = 'پیش‌نمایش لوگو'
+    logo_preview.allow_tags = True
 
-class StaticPageAdmin(admin.ModelAdmin):
+    class Media:
+        js = ()
+        css = {
+            'all': ('assets/css/admin-logo.css',)
+        }
+
+
+class StaticPageAdmin(ModelAdmin):
     list_display = ('title', 'slug', 'active', 'updated_at')
     list_filter = ('active', 'updated_at')
     list_editable = ('active',)
@@ -340,7 +354,7 @@ class StaticPageAdmin(admin.ModelAdmin):
     )
 
 
-class SpecificationAdmin(admin.ModelAdmin):
+class SpecificationAdmin(ModelAdmin):
     list_display = ('name', 'category', 'data_type', 'unit', 'is_main', 'slug')
     list_filter = ('category', 'data_type', 'is_main')
     search_fields = ('name', 'slug')
@@ -353,7 +367,7 @@ class SpecificationAdmin(admin.ModelAdmin):
     )
 
 
-class ProductSpecificationAdmin(admin.ModelAdmin):
+class ProductSpecificationAdmin(ModelAdmin):
     list_display = ('product', 'specification', 'get_value', 'is_main')
     list_filter = ('product', 'specification__category', 'is_main')
     search_fields = ('product__name', 'specification__name')

@@ -1,5 +1,8 @@
 from django.urls import path
 from .views import *
+from django.shortcuts import get_object_or_404, redirect
+from .models import Product
+from django.utils.text import slugify
 
 
 urlpatterns = [

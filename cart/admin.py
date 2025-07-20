@@ -1,11 +1,11 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from .models import Cart, CartItem, Order
 from django.utils.html import format_html
 from django.utils import timezone
 import jdatetime
-
 @admin.register(Cart)
-class CartAdmin(admin.ModelAdmin):
+class CartAdmin(ModelAdmin):
     list_display = ('cart_number', 'user', 'status', 'is_paid_colored', 'total_price', 'created_date_jalali', 'updated_date_jalali')
     list_filter = ('status', 'is_paid', 'created_date')
     search_fields = ('cart_number', 'user__username', 'user__email')
@@ -31,19 +31,20 @@ class CartAdmin(admin.ModelAdmin):
             return format_html('<span style="color: red; font-weight: bold;">پرداخت نشده</span>')
     is_paid_colored.short_description = 'وضعیت پرداخت'
 
-@admin.register(CartItem)
-class CartItemAdmin(admin.ModelAdmin):
-    list_display = ('cart', 'package', 'count', 'final_price', 'total_price')
-    list_filter = ('cart__status', 'cart__is_paid')
-    search_fields = ('cart__cart_number', 'package__product__name')
+class CartItemAdmin(TabularInline):
+    model = CartItem
+    extra = 1
+    fields = ('package', 'count', 'final_price', 'total_price')
     readonly_fields = ('final_price',)
 
     def total_price(self, obj):
         return f"{obj.total_price():,} تومان"
     total_price.short_description = 'قیمت کل'
 
+
+
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ModelAdmin):
     list_display = ('order_number', 'user', 'status_colored', 'payment_status_colored', 'total_price', 'order_date_jalali', 'payment_date_jalali', 'shipping_method_display')
     list_filter = ('status', 'payment_status', 'payment_method', 'shipping_method', 'order_date')
     search_fields = ('order_number', 'user__username', 'user__email', 'payment_reference_id')

@@ -1,8 +1,8 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from django.utils.html import format_html
 from .models import Article
 
-@admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'short_description_display', 'image_preview', 'created_at', 'is_published')
     list_filter = ('is_published', 'created_at')

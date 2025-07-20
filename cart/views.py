@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 
 import json
 import traceback
+from sms import send_sms
 
 
 def show_cart(request):
@@ -780,6 +781,15 @@ def verify_payment(request):
             order.payment_status = 'پرداخت شده'
             order.save()
             
+            # ارسال پیامک به کاربر پس از پرداخت موفق
+            try:
+                user_phone = request.user.profile.phone_number
+                if user_phone:
+                    message = f"سفارش شما با موفقیت ثبت و پرداخت شد. کد پیگیری: {ref_id}\nاز خرید شما متشکریم."
+                    send_sms(user_phone, message)
+            except Exception as e:
+                print(f"Error sending SMS to user: {e}")
+
             # علامت‌گذاری سبد خرید به عنوان پرداخت‌شده
             order.cart.is_paid = True
             order.cart.save()
