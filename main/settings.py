@@ -113,9 +113,13 @@ DATABASES = {
         'PORT': '3306',
         'OPTIONS': {
             'sql_mode': 'STRICT_ALL_TABLES',
+            'charset': 'utf8mb4',
+            'init_command': "SET NAMES 'utf8mb4'",
         },
     }
 }
+
+
 
 
 # DATABASES = {
