@@ -19,6 +19,7 @@ from shopApp.models import (
     Size, Product, ProductPackage, Gallery,
     HomeSlider, PromotionalBanner, FeaturedBrand
 )
+from account.models import UserCoupon
 
 def cleanup_existing_data():
     """پاک کردن داده‌های موجود برای جلوگیری از تداخل در ساخت مجدد"""
@@ -66,6 +67,19 @@ def create_demo_data():
     except:
         admin_user = User.objects.get(username='admin')
         print("کاربر ادمین از قبل وجود دارد.")
+    
+    # افزودن کوپن تستی برای همه کاربران
+    all_users = User.objects.all()
+    for user in all_users:
+        for i in range(2):
+            UserCoupon.objects.create(
+                user=user,
+                code=f"TESTCOUPON{user.id}{i+1}",
+                discount=random.choice([10, 15, 20, 25]),
+                is_active=random.choice([True, False]),
+                expire_at=datetime.datetime.now() + datetime.timedelta(days=random.randint(5, 30))
+            )
+    print("کوپن‌های تستی برای کاربران ایجاد شد.")
     
     # ایجاد دسته‌بندی‌های اصلی
     base_categories = [

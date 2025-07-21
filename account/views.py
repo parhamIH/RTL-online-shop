@@ -15,6 +15,7 @@ from django.utils import timezone
 from sms import generate_verification_code, send_verification_sms, is_verification_code_expired
 from django.core.exceptions import ValidationError
 from account.models import validate_iranian_national_id
+from .models import UserCoupon
 
 
 @login_required(login_url='/login/')
@@ -1057,4 +1058,12 @@ def set_new_password(request):
     
     # If GET request, redirect to login page
     return redirect('login')
+
+@login_required(login_url='/login/')
+def user_offers(request):
+    coupons = UserCoupon.objects.filter(user=request.user)
+    context = {
+        'coupons': coupons,
+    }
+    return render(request, 'template/offers.html', context)
 

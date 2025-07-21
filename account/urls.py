@@ -24,4 +24,5 @@ urlpatterns = [
     path('reset-password-request/', reset_password_request, name='reset_password_request'),
     path('verify-reset-code/', verify_reset_code, name='verify_reset_code'),
     path('set-new-password/', set_new_password, name='set_new_password'),
+    path('profile/offers', user_offers, name='user_offers'),
 ]

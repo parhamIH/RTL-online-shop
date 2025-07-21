@@ -1,7 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from django.contrib.auth.models import User
-from .models import ClientAddress, Profile, Notification, Favourite_products
+from .models import ClientAddress, Profile, Notification, Favourite_products, UserCoupon
 
 class ProfileInline(StackedInline):
     model = Profile
@@ -53,6 +53,12 @@ class NotificationAdmin(ModelAdmin):
             'fields': ('title', 'message', 'notification_type', 'is_read', 'related_url')
         }),
     )
+
+@admin.register(UserCoupon)
+class UserCouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'user', 'discount', 'is_active', 'expire_at', 'created_at')
+    list_filter = ('is_active', 'expire_at', 'created_at')
+    search_fields = ('code', 'user__username', 'user__phone_number')
 
 # Register your models here.
 admin.site.unregister(User)
