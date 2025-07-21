@@ -428,7 +428,7 @@
                                             <span class="badge font-12 main-color-one-bg text-white rounded-pill">دفتر مرکزی</span>
                                         </div>
                                         <div>
-                                            <p class="mb-0 font-16"><span class="fw-bold h5 title-font">تهران -</span>{{ site_settings.address|default:"تهران، عباس آباد، خیابان سهروردی،کوچه عشوری" }}
+                                            <p class="mb-0 font-16"><span class="fw-bold h5 title-font">بندرعباس -</span>{{ site_settings.address|default:"تهران، عباس آباد، خیابان سهروردی،کوچه عشوری" }}
                                             </p>
                                         </div>
                                     </div>
@@ -446,13 +446,15 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="footer-main-links">
                         <div class="row gy-4">
                             <div class="col-md-4 col-6">
                                 <ul class="navbar-nav">
-                                    <li class="nav-item"><a href="/products?category=mobile" class="nav-link">گوشی موبایل</a></li>
-                                    <li class="nav-item"><a href="/products?orderby=newest" class="nav-link">جدیدترین محصولات</a></li>
-                                    <li class="nav-item"><a href="/products?orderby=higher-price" class="nav-link">پرفروش ترین ها</a></li>
+                                    <li class="nav-item"><a href="/blog" class="nav-link">وبلاگ</a></li>
+                                    <!-- <li class="nav-item"><a href="/products?category=mobile" class="nav-link">گوشی موبایل</a></li> -->
+                                    <!-- <li class="nav-item"><a href="/products?orderby=newest" class="nav-link">جدیدترین محصولات</a></li> -->
+                                    <!-- <li class="nav-item"><a href="/products?orderby=higher-price" class="nav-link">پرفروش ترین ها</a></li> -->
                                 </ul>
                             </div>
                             <div class="col-md-4 col-6">
@@ -460,9 +462,6 @@
                                     {% for page in static_pages %}
                                     <li class="nav-item"><a href="/page/{{ page.slug }}" class="nav-link">{{ page.title }}</a></li>
                                     {% empty %}
-                                    <li class="nav-item"><a href="/about" class="nav-link">درباره ما</a></li>
-                                    <li class="nav-item"><a href="/contact" class="nav-link">تماس با ما</a></li>
-                                    <li class="nav-item"><a href="/blog" class="nav-link">وبلاگ</a></li>
                                     {% endfor %}
                                 </ul>
                             </div>

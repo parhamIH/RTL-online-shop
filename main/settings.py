@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+3de5-7n=)wez3lmrwck17lnd4fz5r=si=uzs4*fja4*9hl-mr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['fatiimaa.ir', 'www.fatiimaa.ir','.fatiimaa.ir']
+ALLOWED_HOSTS = ['fatiimaa.ir', 'www.fatiimaa.ir','.fatiimaa.ir',"*"]
 
 
 # Application definition
@@ -103,35 +103,35 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fatiimaa_database',
-        'USER': 'fatiimaa_user',
-        'PASSWORD': 'Iq^?QIIaA^.,Ecz8',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'sql_mode': 'STRICT_ALL_TABLES',
-            'charset': 'utf8mb4',
-            'init_command': "SET NAMES 'utf8mb4'",
-        },
-    }
-}
-
-
-
-
 # DATABASES = {
-# 		'default': {
-# 			'ENGINE': 'django.db.backends.mysql',
-# 			'NAME': 'shahan_shop',
-# 			'USER': 'root',
-# 			'PASSWORD': 'parhams', 
-# 			'HOST':'localhost',
-# 			'PORT':'3306',
-# 		}
-# 	}
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'fatiimaa_database',
+#         'USER': 'fatiimaa_user',
+#         'PASSWORD': 'Iq^?QIIaA^.,Ecz8',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'sql_mode': 'STRICT_ALL_TABLES',
+#             'charset': 'utf8mb4',
+#             'init_command': "SET NAMES 'utf8mb4'",
+#         },
+#     }
+# }
+
+
+
+
+DATABASES = {
+		'default': {
+			'ENGINE': 'django.db.backends.mysql',
+			'NAME': 'shahan_shop',
+			'USER': 'root',
+			'PASSWORD': 'parhams', 
+			'HOST':'localhost',
+			'PORT':'3306',
+		}
+	}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -171,8 +171,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "assets")]
 
 STATICFILES_DIRS = [BASE_DIR / 'template', BASE_DIR / 'templateAdmin']
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATIC_ROOT = "/home/fatiimaa/public_html/static"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATIC_ROOT = "/home/fatiimaa/public_html/static"  ##server
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -188,10 +188,10 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #media file - directory
-MEDIA_URL = '/media/'
-MEDIA_ROOT = "/home/fatiimaa/public_html/media"
 # MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / "uploads"
+# MEDIA_ROOT = "/home/fatiimaa/public_html/media"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "uploads"
 
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
