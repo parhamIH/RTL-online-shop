@@ -82,139 +82,76 @@ def login_user(request):
 
 def register_user(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        phone_number = request.POST.get('phone_number')  # دریافت شماره تلفن
-        password = request.POST.get('password')
-        password2 = request.POST.get('password2')
-        terms = request.POST.get('terms')
-        
-        # بررسی اعتبار شماره تلفن
+        phone_number = request.POST.get('phone_number')
         if not phone_number or len(phone_number) != 11 or not phone_number.startswith('09'):
-            messages.error(request, 'لطفا یک شماره تلفن همراه معتبر وارد کنید')
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': 'شماره موبایل معتبر نیست'})
+            messages.error(request, 'شماره موبایل معتبر نیست')
             return render(request, 'template/login.html')
-        
-        # Check if terms are accepted
-        if not terms:
-            messages.error(request, 'لطفا قوانین و شرایط را بپذیرید')
+        if Profile.objects.filter(phone_number=phone_number).exists() or User.objects.filter(username=phone_number).exists():
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': 'این شماره قبلاً ثبت شده است'})
+            messages.error(request, 'این شماره قبلاً ثبت شده است')
             return render(request, 'template/login.html')
-            
-        if password == password2:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, 'نام کاربری قبلاً استفاده شده است')
-            elif User.objects.filter(email=email).exists():
-                messages.error(request, 'ایمیل قبلاً استفاده شده است')
-            elif Profile.objects.filter(phone_number=phone_number).exists():
-                messages.error(request, 'شماره تلفن قبلاً استفاده شده است')
-            else:
-                # ذخیره اطلاعات کاربر در سشن
-                request.session['registration_info'] = {
-                    'username': username,
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'email': email,
-                    'phone_number': phone_number,
-                    'password': password
-                }
-                
-                # ارسال کد تأیید به شماره تلفن
-                code = generate_verification_code()
-                request.session['registration_code'] = code
-                request.session['registration_code_created_at'] = datetime.now().timestamp()
-                
-                # ارسال پیامک
-                success, response = send_verification_sms(phone_number, code)
-                
-                if success:
-                    # هدایت به صفحه تأیید کد
-                    context = {
-                        'phone_number': phone_number,
-                        'success': 'کد تأیید به شماره تلفن شما ارسال شد',
-                        'registration_mode': True
-                    }
-                    return render(request, 'template/verify_registration.html', context)
-                else:
-                    messages.error(request, f'خطا در ارسال پیامک: {response}')
-                    return render(request, 'template/login.html')
+        code = generate_verification_code()
+        request.session['registration_phone'] = phone_number
+        request.session['registration_code'] = code
+        request.session['registration_code_created_at'] = datetime.now().timestamp()
+        success, response = send_verification_sms(phone_number, code)
+        if success:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success', 'message': 'کد تأیید ارسال شد'})
+            return render(request, 'template/verify_registration.html', {'phone_number': phone_number})
         else:
-            messages.error(request, 'رمز عبور و تکرار رمز عبور یکسان نیستند')
-
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': f'خطا در ارسال پیامک: {response}'})
+            messages.error(request, f'خطا در ارسال پیامک: {response}')
+            return render(request, 'template/login.html')
     return render(request, 'template/login.html')
 
 def verify_registration(request):
-    """تأیید کد برای ثبت نام"""
-    context = {}
-    
-    # بررسی وجود اطلاعات ثبت نام در سشن
-    if 'registration_info' not in request.session or 'registration_code' not in request.session:
-        messages.error(request, 'اطلاعات ثبت نام نامعتبر است. لطفا دوباره تلاش کنید')
-        return redirect('/login/')
-    
-    registration_info = request.session['registration_info']
-    registration_code = request.session['registration_code']
-    phone_number = registration_info['phone_number']
-    
-    context['phone_number'] = phone_number
-    context['registration_mode'] = True
-    
     if request.method == 'POST':
+        phone_number = request.POST.get('phone_number')
         code = request.POST.get('code')
-        
-        if not code:
-            context['error'] = 'لطفا کد تأیید را وارد کنید'
-            return render(request, 'template/verify_registration.html', context)
-        
-        # بررسی صحت کد
-        if code != registration_code:
-            context['error'] = 'کد تأیید نادرست است'
-            return render(request, 'template/verify_registration.html', context)
-        
+        session_phone = request.session.get('registration_phone')
+        session_code = request.session.get('registration_code')
+        code_created_at = request.session.get('registration_code_created_at')
+        # اعتبارسنجی کد و شماره
+        if (phone_number != session_phone or code != session_code):
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': 'کد تأیید اشتباه است'})
+            messages.error(request, 'کد تأیید اشتباه است')
+            return render(request, 'template/verify_registration.html', {'phone_number': phone_number})
         # بررسی انقضای کد
-        code_created_at = datetime.fromtimestamp(request.session['registration_code_created_at'])
-        if is_verification_code_expired(code_created_at):
-            context['error'] = 'کد تأیید منقضی شده است. لطفا مجددا تلاش کنید'
-            return render(request, 'template/verify_registration.html', context)
-        
-        # ایجاد کاربر جدید
+        from datetime import datetime
+        from sms import is_verification_code_expired
+        if code_created_at:
+            code_created_at_dt = datetime.fromtimestamp(code_created_at)
+            if is_verification_code_expired(code_created_at_dt):
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'status': 'error', 'message': 'کد تأیید منقضی شده است'})
+                messages.error(request, 'کد تأیید منقضی شده است')
+                return render(request, 'template/verify_registration.html', {'phone_number': phone_number})
+        # ساخت کاربر جدید
         try:
-            user = User.objects.create_user(
-                username=registration_info['username'],
-                first_name=registration_info['first_name'],
-                last_name=registration_info['last_name'],
-                email=registration_info['email'],
-                password=registration_info['password']
-            )
-            
-            # ذخیره شماره تلفن و علامت‌گذاری آن به عنوان تأیید شده
+            user = User.objects.create_user(username=phone_number, password=User.objects.make_random_password())
             profile = Profile.objects.get(user=user)
             profile.phone_number = phone_number
             profile.is_phone_verified = True
             profile.save()
-            
-            # پاکسازی اطلاعات سشن
-            if 'registration_info' in request.session:
-                del request.session['registration_info']
-            if 'registration_code' in request.session:
-                del request.session['registration_code']
-            if 'registration_code_created_at' in request.session:
-                del request.session['registration_code_created_at']
-            
-            # ورود کاربر
             login(request, user)
-            
-            messages.success(request, 'ثبت نام شما با موفقیت انجام شد')
-            return redirect('/products')
-            
-        except ValidationError as e:
-            context['error'] = f'خطا در ثبت نام: {str(e)}'
-            return render(request, 'template/verify_registration.html', context)
+            # پاکسازی session
+            for key in ['registration_phone', 'registration_code', 'registration_code_created_at']:
+                if key in request.session: del request.session[key]
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success', 'message': 'ثبت‌نام با موفقیت انجام شد'})
+            return redirect('/profile')
         except Exception as e:
-            context['error'] = f'خطای سیستمی: {str(e)}'
-            return render(request, 'template/verify_registration.html', context)
-    
-    return render(request, 'template/verify_registration.html', context)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': f'خطا در ثبت‌نام: {str(e)}'})
+            messages.error(request, f'خطا در ثبت‌نام: {str(e)}')
+            return render(request, 'template/verify_registration.html', {'phone_number': phone_number})
+    return redirect('/login/')
 
 def resend_registration_code(request):
     """ارسال مجدد کد تأیید برای ثبت نام"""

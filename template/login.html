@@ -94,9 +94,10 @@
                                             سایت
                                         </button>
                                     </div>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                            ثبت نام
-                                            </button>
+                                    <!-- دکمه ثبت‌نام فقط modal شماره موبایل را باز کند -->
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerMobileModal">
+                                        ثبت نام
+                                    </button>
 
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#passwordResetModal">فراموشی رمز عبور</a>
                                 </form>
@@ -391,301 +392,132 @@
   });
 </script>
 
+<!-- Modal ثبت‌نام فقط با شماره موبایل -->
+<div class="modal" id="registerMobileModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">ثبت نام با شماره موبایل</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="/register/" id="registerMobileForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="register_phone_number" class="form-label">شماره تلفن همراه</label>
+            <input type="text" class="form-control" id="register_phone_number" name="phone_number" placeholder="مثال: 09123456789" pattern="09[0-9]{9}" maxlength="11" required>
+          </div>
+          <button type="submit" class="btn btn-success w-100" id="registerMobileBtn">ارسال کد تأیید</button>
+        </form>
+        <div id="register-mobile-errors" class="alert alert-danger mt-2" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">بستن</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal وارد کردن کد OTP -->
+<div class="modal" id="otpModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">کد تأیید را وارد کنید</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="/verify-registration/" id="otpForm">
+          {% csrf_token %}
+          <input type="hidden" name="phone_number" id="otp_phone_number">
+          <div class="mb-3">
+            <label for="otp_code" class="form-label">کد تأیید</label>
+            <input type="text" class="form-control" id="otp_code" name="code" maxlength="6" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">تأیید</button>
+        </form>
+        <div id="otp-errors" class="alert alert-danger mt-2" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Phone number validation for reset form
-    const resetPhoneInput = document.getElementById('reset_phone_number');
-    if (resetPhoneInput) {
-        resetPhoneInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            
-            if (this.value.length > 0 && this.value[0] !== '0') {
-                this.value = '0' + this.value;
-            }
-            
-            if (this.value.length > 11) {
-                this.value = this.value.slice(0, 11);
-            }
-        });
-    }
-    
-    // Reset phone form submission
-    const resetPhoneForm = document.getElementById('resetPhoneForm');
-    if (resetPhoneForm) {
-        resetPhoneForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const phoneNumber = document.getElementById('reset_phone_number').value;
-            const errorDiv = document.getElementById('reset-phone-errors');
-            
-            // Basic validation
-            if (phoneNumber.length !== 11 || !phoneNumber.startsWith('09')) {
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'شماره موبایل باید 11 رقم باشد و با 09 شروع شود.';
-                return;
-            }
-            
-            // Hide error message if previously shown
-            errorDiv.style.display = 'none';
-            
-            // AJAX request to send verification code
-            const formData = new FormData(resetPhoneForm);
-            
-            fetch('/reset-password-request/', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Move to step 2 (verification code)
-                    document.getElementById('reset-step-1').style.display = 'none';
-                    document.getElementById('reset-step-2').style.display = 'block';
-                    
-                    // Set the phone number in the hidden field
-                    document.getElementById('reset_phone_hidden').value = phoneNumber;
-                    
-                    // Start countdown timer
-                    startResetTimer();
-                } else {
-                    // Show error message
-                    errorDiv.style.display = 'block';
-                    errorDiv.textContent = data.message || 'خطا در ارسال کد تأیید. لطفاً دوباره تلاش کنید.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.';
-            });
-        });
-    }
-    
-    // Verification code form submission
-    const resetVerifyForm = document.getElementById('resetVerifyForm');
-    if (resetVerifyForm) {
-        resetVerifyForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const verificationCode = document.getElementById('reset_verification_code').value;
-            const errorDiv = document.getElementById('reset-code-errors');
-            
-            // Basic validation
-            if (verificationCode.length !== 6 || !/^\d+$/.test(verificationCode)) {
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'کد تأیید باید شامل 6 رقم باشد.';
-                return;
-            }
-            
-            // Hide error message if previously shown
-            errorDiv.style.display = 'none';
-            
-            // AJAX request to verify code
-            const formData = new FormData(resetVerifyForm);
-            
-            fetch('/verify-reset-code/', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Move to step 3 (new password)
-                    document.getElementById('reset-step-2').style.display = 'none';
-                    document.getElementById('reset-step-3').style.display = 'block';
-                    
-                    // Set the reset token in the hidden field
-                    document.getElementById('reset_token_hidden').value = data.reset_token;
-                } else {
-                    // Show error message
-                    errorDiv.style.display = 'block';
-                    errorDiv.textContent = data.message || 'کد تأیید نامعتبر است. لطفاً دوباره تلاش کنید.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.';
-            });
-        });
-    }
-    
-    // New password form submission
-    const resetPasswordForm = document.getElementById('resetPasswordForm');
-    if (resetPasswordForm) {
-        resetPasswordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newPassword = document.getElementById('new_password').value;
-            const confirmPassword = document.getElementById('confirm_new_password').value;
-            const errorDiv = document.getElementById('reset-password-errors');
-            
-            // Password validation
-            if (newPassword.length < 8) {
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'رمز عبور باید حداقل 8 کاراکتر باشد.';
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'رمز عبور و تکرار آن مطابقت ندارند.';
-                return;
-            }
-            
-            // Hide error message if previously shown
-            errorDiv.style.display = 'none';
-            
-            // AJAX request to set new password
-            const formData = new FormData(resetPasswordForm);
-            
-            fetch('/set-new-password/', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Show success message
-                    document.getElementById('reset-step-3').style.display = 'none';
-                    document.getElementById('reset-success').style.display = 'block';
-                    
-                    // Close modal after 3 seconds and refresh page
-                    setTimeout(function() {
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('passwordResetModal'));
-                        modal.hide();
-                        
-                        // Optional: Refresh the page or redirect to login
-                        // window.location.reload();
-                    }, 3000);
-                } else {
-                    // Show error message
-                    errorDiv.style.display = 'block';
-                    errorDiv.textContent = data.message || 'خطا در تغییر رمز عبور. لطفاً دوباره تلاش کنید.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.';
-            });
-        });
-    }
-    
-    // Resend code button
-    const resendResetCodeBtn = document.getElementById('resendResetCodeBtn');
-    if (resendResetCodeBtn) {
-        resendResetCodeBtn.addEventListener('click', function() {
-            const phoneNumber = document.getElementById('reset_phone_hidden').value;
-            const errorDiv = document.getElementById('reset-code-errors');
-            
-            // Hide error message if previously shown
-            errorDiv.style.display = 'none';
-            
-            // Hide resend button and reset timer
-            resendResetCodeBtn.style.display = 'none';
-            
-            // AJAX request to resend verification code
-            const formData = new FormData();
-            formData.append('phone_number', phoneNumber);
-            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-            
-            fetch('/reset-password-request/', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Start countdown timer again
-                    startResetTimer();
-                } else {
-                    // Show error message
-                    errorDiv.style.display = 'block';
-                    errorDiv.textContent = data.message || 'خطا در ارسال مجدد کد تأیید. لطفاً دوباره تلاش کنید.';
-                    resendResetCodeBtn.style.display = 'block'; // Show resend button again
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorDiv.style.display = 'block';
-                errorDiv.textContent = 'خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.';
-                resendResetCodeBtn.style.display = 'block'; // Show resend button again
-            });
-        });
-    }
-    
-    // Countdown timer function
-    function startResetTimer() {
-        const timerElement = document.getElementById('reset-timer');
-        const resendButton = document.getElementById('resendResetCodeBtn');
-        
-        let timeLeft = 120; // 2 minutes in seconds
-        
-        // Update timer every second
-        const timerInterval = setInterval(function() {
-            timeLeft--;
-            
-            // Format time as mm:ss
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerElement.textContent = `زمان باقی‌مانده: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            // Check if timer has expired
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                timerElement.textContent = 'زمان ارسال کد به پایان رسید';
-                resendButton.style.display = 'block';
-            }
-        }, 1000);
-    }
-    
-    // Reset modal state when closed
-    const passwordResetModal = document.getElementById('passwordResetModal');
-    if (passwordResetModal) {
-        passwordResetModal.addEventListener('hidden.bs.modal', function() {
-            // Reset forms
-            if (resetPhoneForm) resetPhoneForm.reset();
-            if (resetVerifyForm) resetVerifyForm.reset();
-            if (resetPasswordForm) resetPasswordForm.reset();
-            
-            // Hide error messages
-            const errorDivs = [
-                document.getElementById('reset-phone-errors'),
-                document.getElementById('reset-code-errors'),
-                document.getElementById('reset-password-errors')
-            ];
-            errorDivs.forEach(div => {
-                if (div) div.style.display = 'none';
-            });
-            
-            // Reset steps visibility
-            document.getElementById('reset-step-1').style.display = 'block';
-            document.getElementById('reset-step-2').style.display = 'none';
-            document.getElementById('reset-step-3').style.display = 'none';
-            document.getElementById('reset-success').style.display = 'none';
-            
-            // Reset timer text
-            const timerElement = document.getElementById('reset-timer');
-            if (timerElement) timerElement.textContent = 'زمان باقی‌مانده: 02:00';
-            
-            // Hide resend button
-            const resendButton = document.getElementById('resendResetCodeBtn');
-            if (resendButton) resendButton.style.display = 'none';
-        });
-    }
+  // ثبت‌نام فقط با شماره موبایل
+  const registerMobileForm = document.getElementById('registerMobileForm');
+  const registerMobileBtn = document.getElementById('registerMobileBtn');
+  const registerMobileErrors = document.getElementById('register-mobile-errors');
+  const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+  const registerMobileModal = document.getElementById('registerMobileModal');
+  if (registerMobileForm) {
+    registerMobileForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      registerMobileErrors.style.display = 'none';
+      const phone = document.getElementById('register_phone_number').value;
+      if (phone.length !== 11 || !phone.startsWith('09')) {
+        registerMobileErrors.style.display = 'block';
+        registerMobileErrors.textContent = 'شماره موبایل باید 11 رقم باشد و با 09 شروع شود.';
+        return;
+      }
+      // ارسال فرم با AJAX
+      const formData = new FormData(registerMobileForm);
+      fetch('/register/', {
+        method: 'POST',
+        body: formData,
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          // بستن modal شماره موبایل و باز کردن modal کد
+          bootstrap.Modal.getInstance(registerMobileModal).hide();
+          document.getElementById('otp_phone_number').value = phone;
+          otpModal.show();
+        } else {
+          registerMobileErrors.style.display = 'block';
+          registerMobileErrors.textContent = data.message || 'خطا در ارسال کد.';
+        }
+      })
+      .catch(error => {
+        registerMobileErrors.style.display = 'block';
+        registerMobileErrors.textContent = 'خطا در ارتباط با سرور.';
+      });
+    });
+  }
+  // ارسال کد OTP
+  const otpForm = document.getElementById('otpForm');
+  const otpErrors = document.getElementById('otp-errors');
+  if (otpForm) {
+    otpForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      otpErrors.style.display = 'none';
+      const code = document.getElementById('otp_code').value;
+      if (code.length !== 6 || !/^[0-9]+$/.test(code)) {
+        otpErrors.style.display = 'block';
+        otpErrors.textContent = 'کد تأیید باید 6 رقم باشد.';
+        return;
+      }
+      const formData = new FormData(otpForm);
+      fetch('/verify-registration/', {
+        method: 'POST',
+        body: formData,
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          window.location.href = '/profile';
+        } else {
+          otpErrors.style.display = 'block';
+          otpErrors.textContent = data.message || 'کد تأیید اشتباه است.';
+        }
+      })
+      .catch(error => {
+        otpErrors.style.display = 'block';
+        otpErrors.textContent = 'خطا در ارتباط با سرور.';
+      });
+    });
+  }
 });
 </script>
 
