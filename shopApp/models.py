@@ -313,7 +313,7 @@ class Product(models.Model):
 class ProductPackage(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='product_packages')
     # ____________________________________________________*product attributes *___________________________________________
-    size = models.ForeignKey(Size, on_delete=models.CASCADE, default=None,blank=True)
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, default=None, blank=True, null=True)
     brand = models.ForeignKey('Brand', on_delete=models.CASCADE, default=None, blank=True, null=True, verbose_name="برند")
     color = models.ForeignKey(Color,verbose_name="رنگ", blank= True,null=True, on_delete=models.CASCADE)
 
@@ -343,7 +343,8 @@ class ProductPackage(models.Model):
         verbose_name_plural = " ویژگی های محصولات"
 
     def __str__(self):
-        return f"{self.product.id} - {self.product.name} - {self.size.size} - {self.quantity} - {self.weight} - "
+        size_str = self.size.size if self.size else "بدون سایز"
+        return f"{self.product.id} - {self.product.name} - {size_str} - {self.quantity} - {self.weight} - "
 
 
     @property

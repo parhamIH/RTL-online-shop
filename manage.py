@@ -2,6 +2,9 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import io
+import colorama
+colorama.init(strip=False, convert=False)
 
 
 def main():
@@ -15,6 +18,8 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
     execute_from_command_line(sys.argv)
 
 
