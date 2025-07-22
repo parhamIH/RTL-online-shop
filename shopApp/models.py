@@ -315,10 +315,10 @@ class ProductPackage(models.Model):
     # ____________________________________________________*product attributes *___________________________________________
     size = models.ForeignKey(Size, on_delete=models.CASCADE, default=None,blank=True)
     brand = models.ForeignKey('Brand', on_delete=models.CASCADE, default=None, blank=True, null=True, verbose_name="برند")
-    color = models.ForeignKey(Color,verbose_name="رنگ", blank= True, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color,verbose_name="رنگ", blank= True,null=True, on_delete=models.CASCADE)
 
     quantity = models.PositiveIntegerField(default=0, verbose_name="تعداد" , blank= False)
-    weight = models.PositiveIntegerField(verbose_name="وزن به گرم" , default= 0 , blank= True)
+    weight = models.PositiveIntegerField(verbose_name="وزن به گرم" , default= 0 , blank= True,null=True)
 
     is_active_package=models.BooleanField(default=False ,  verbose_name=" موجود ؟" , )
 
