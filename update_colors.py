@@ -22,9 +22,9 @@ def update_colors():
         color.name = data['name']
         color.color = data['color']
         color.save()
-        print(f'Updated BaseColor {i+1} with name: {color.name}, color: {color.color}')
+        # print(f'Updated BaseColor {i+1} with name: {color.name}, color: {color.color}')
     
-    print(f'Total BaseColors updated: {len(colors)}')
+    # print(f'Total BaseColors updated: {len(colors)}')
     
     # به‌روزرسانی Color
     colors = Color.objects.all()
@@ -42,9 +42,9 @@ def update_colors():
             # فقط hex_code را تغییر می‌دهیم و نام را دست نمی‌زنیم
             color.hex_code = data['hex_code']
             color.save()
-            print(f'Updated Color {i+1} with name: {color.name}, hex_code: {color.hex_code}')
+            # print(f'Updated Color {i+1} with name: {color.name}, hex_code: {color.hex_code}')
     
-    print(f'Total Colors updated: {len(colors)}')
+    # print(f'Total Colors updated: {len(colors)}')
 
 if __name__ == '__main__':
     update_colors() 

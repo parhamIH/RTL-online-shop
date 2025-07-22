@@ -106,7 +106,7 @@ def products_list(request):
     page = request.GET.get("page")
     products_paginator = Paginator(unique_packages, 15)  # 15 محصول در هر صفحه
     current_page = products_paginator.get_page(page)
-    print(f"\n\n\n\n shopapp produnct list function  ---- base_categories:{base_categories.values()}\n\n categories:{categories.values()}")
+    # print(f"\n\n\n\n shopapp produnct list function  ---- base_categories:{base_categories.values()}\n\n categories:{categories.values()}")
     
     context = {
         "base_categories": base_categories,
@@ -163,7 +163,7 @@ def product_detail(request, *args, **kwargs):
         if cart:
             cart_items = CartItem.objects.filter(cart=cart)
             cart_package_ids = [item.package.id for item in cart_items]
-            print(f"\n\n\n\ncart_package_ids:{cart_package_ids}\ncart_items:{cart_items}\n\n\n\n\n\n\n\n")
+            # print(f"\n\n\n\ncart_package_ids:{cart_package_ids}\ncart_items:{cart_items}\n\n\n\n\n\n\n\n")
             cart_items_json = [
                 {
                     'package': {'id': item.package.id, 'quantity': item.package.quantity},
@@ -203,7 +203,7 @@ def product_detail(request, *args, **kwargs):
         packages = packages.filter(color__id=selected_color_id)
     else:
         selected_color_id = None  # به وضوح مقداردهی کن
-    print("\n\n\n\n\n dashchagh",product_specifications,"\n\n\n\n\n")
+    # print("\n\n\n\n\n dashchagh",product_specifications,"\n\n\n\n\n")
     # مقداردهی اولیه `context`
     context = {
         "categories": categories,
@@ -233,7 +233,7 @@ def product_detail(request, *args, **kwargs):
 
         package_to_cart = request.POST.get("package-id")  # مقدار id بسته انتخاب‌شده
         if package_to_cart:
-            print(f"\n\n\n\n\n\n POST req -> PD: {request.POST} \n\n\n\n\n ")
+            # print(f"\n\n\n\n\n\n POST req -> PD: {request.POST} \n\n\n\n\n ")
             try:
                 package_id = int(package_to_cart)  # تبدیل مقدار به عدد
             except ValueError:
@@ -254,7 +254,7 @@ def product_detail(request, *args, **kwargs):
                     cart_item.count += int(request.POST.get('count', 1))
                     cart_item.save()
 
-                print(f"\n\n\n post package pd \n\n\n\n\n\ncart: {cart}")
+                # print(f"\n\n\n post package pd \n\n\n\n\n\ncart: {cart}")
         return redirect(request.path)  # پس از افزودن به سبد خرید، صفحه رفرش شود
 
     return render(request, "template/product.html", context)
@@ -371,7 +371,7 @@ def category_products(request, en_name):
         "selected_brands": selected_brands,
     }
     
-    print(f"Total category products: {len(unique_packages)}")
+    # print(f"Total category products: {len(unique_packages)}")
     
     return render(request, "template/category.html", context)
 

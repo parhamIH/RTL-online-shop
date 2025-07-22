@@ -15,8 +15,8 @@ class ZarinPal:
         self.callback_url = callback_url
         self.sandbox = sandbox
         
-        print(f"Initializing ZarinPal with merchant_id: {merchant_id}, sandbox: {sandbox}")
-        print(f"Callback URL: {callback_url}")
+        # print(f"Initializing ZarinPal with merchant_id: {merchant_id}, sandbox: {sandbox}")
+        # print(f"Callback URL: {callback_url}")
         
         # آدرس‌های API زرین‌پال - نسخه جدید
         if sandbox:
@@ -48,11 +48,11 @@ class ZarinPal:
             # آدرس تایید پرداخت - استاندارد جدید (v4)
             self.verification_v4_url = 'https://api.zarinpal.com/pg/v4/payment/verify.json'
             
-        print(f"Payment request URL (old): {self.payment_request_url}")
-        print(f"Payment request URL (new): {self.payment_request_v4_url}")
-        print(f"Payment gateway URL: {self.payment_gateway_url}")
-        print(f"Verification URL (old): {self.verification_url}")
-        print(f"Verification URL (new): {self.verification_v4_url}")
+        # print(f"Payment request URL (old): {self.payment_request_url}")
+        # print(f"Payment request URL (new): {self.payment_request_v4_url}")
+        # print(f"Payment gateway URL: {self.payment_gateway_url}")
+        # print(f"Verification URL (old): {self.verification_url}")
+        # print(f"Verification URL (new): {self.verification_v4_url}")
     
     def payment_request(self, amount, description, email=None, mobile=None):
         """
@@ -61,14 +61,14 @@ class ZarinPal:
         # تبدیل قیمت به ریال (زرین پال از ریال استفاده می کند)
         amount_in_rials = amount * 10
         
-        print(f"Requesting payment - Amount: {amount} Toman ({amount_in_rials} Rial)")
+        # print(f"Requesting payment - Amount: {amount} Toman ({amount_in_rials} Rial)")
         
         # اول با استاندارد جدید تلاش می‌کنیم
         result = self._payment_request_new_api(amount_in_rials, description, email, mobile)
         
         # اگر موفق نبود، با استاندارد قدیمی تلاش می‌کنیم
         if not result['success']:
-            print("New API failed, trying old API...")
+            # print("New API failed, trying old API...")
             result = self._payment_request_old_api(amount_in_rials, description, email, mobile)
             
         # چک نهایی نتیجه
@@ -78,14 +78,14 @@ class ZarinPal:
             # ساخت URL درگاه پرداخت
             payment_url = f"{self.payment_gateway_url}{authority}"
             
-            print(f"Generated payment URL: {payment_url}")
+            # print(f"Generated payment URL: {payment_url}")
             result['url'] = payment_url
             
             # در محیط تست اگر URL کار نکرد، URL پشتیبان را امتحان کنیم
             if self.sandbox:
                 alternative_url = f"https://{self.domain}.zarinpal.com/pg/StartPay/{authority}"
                 if payment_url != alternative_url:
-                    print(f"In sandbox mode, adding alternative URL: {alternative_url}")
+                    # print(f"In sandbox mode, adding alternative URL: {alternative_url}")
                     result['alternative_url'] = alternative_url
             
         return result
@@ -108,8 +108,8 @@ class ZarinPal:
         if mobile:
             data['Mobile'] = mobile
         
-        print(f"Old API request URL: {self.payment_request_url}")
-        print(f"Old API request data: {data}")
+        # print(f"Old API request URL: {self.payment_request_url}")
+        # print(f"Old API request data: {data}")
             
         # ارسال درخواست به زرین پال
         try:
@@ -118,8 +118,8 @@ class ZarinPal:
                 'Accept': 'application/json'
             }
             response = requests.post(self.payment_request_url, json=data, headers=headers, timeout=10)
-            print(f"Old API response status: {response.status_code}")
-            print(f"Old API response content: {response.text}")
+            # print(f"Old API response status: {response.status_code}")
+            # print(f"Old API response content: {response.text}")
             
             # بررسی کد وضعیت HTTP
             if response.status_code != 200:
@@ -137,26 +137,26 @@ class ZarinPal:
                 authority = response_data.get('Authority')
                 # اطمینان از معتبر بودن شناسه
                 if not authority:
-                    print("Error: Empty authority received from ZarinPal")
+                    # print("Error: Empty authority received from ZarinPal")
                     return {'success': False, 'error': 'شناسه پرداخت دریافت نشد', 'status': -99}
                     
-                print(f"Old API success - Authority: {authority}")
+                # print(f"Old API success - Authority: {authority}")
                 return {'success': True, 'authority': authority}
             else:
                 # درخواست ناموفق
                 status_code = response_data.get('Status')
                 error_message = self._get_error_message(status_code)
-                print(f"Old API payment request failed with status {status_code}: {error_message}")
+                # print(f"Old API payment request failed with status {status_code}: {error_message}")
                 return {'success': False, 'error': error_message, 'status': status_code}
                 
         except requests.exceptions.RequestException as e:
-            print(f"Old API connection error: {str(e)}")
+            # print(f"Old API connection error: {str(e)}")
             return {'success': False, 'error': f'خطا در اتصال به درگاه: {str(e)}'}
         except (ValueError, json.JSONDecodeError) as e:
-            print(f"Old API response parsing error: {str(e)}")
+            # print(f"Old API response parsing error: {str(e)}")
             return {'success': False, 'error': f'خطا در فرمت پاسخ درگاه: {str(e)}'}
         except Exception as e:
-            print(f"Old API unexpected error: {str(e)}")
+            # print(f"Old API unexpected error: {str(e)}")
             return {'success': False, 'error': f'خطای نامشخص: {str(e)}'}
             
     def _payment_request_new_api(self, amount_in_rials, description, email=None, mobile=None):
@@ -178,8 +178,8 @@ class ZarinPal:
         if mobile:
             data['metadata']['mobile'] = mobile
         
-        print(f"New API request URL: {self.payment_request_v4_url}")
-        print(f"New API request data: {data}")
+        # print(f"New API request URL: {self.payment_request_v4_url}")
+        # print(f"New API request data: {data}")
             
         # ارسال درخواست به زرین پال
         try:
@@ -188,8 +188,8 @@ class ZarinPal:
                 'Accept': 'application/json'
             }
             response = requests.post(self.payment_request_v4_url, json=data, headers=headers, timeout=10)
-            print(f"New API response status: {response.status_code}")
-            print(f"New API response content: {response.text}")
+            # print(f"New API response status: {response.status_code}")
+            # print(f"New API response content: {response.text}")
             
             # بررسی کد وضعیت HTTP
             if response.status_code != 200:
@@ -206,27 +206,27 @@ class ZarinPal:
                 # درخواست موفق - دریافت توکن
                 authority = response_data.get('data', {}).get('authority')
                 if not authority:
-                    print("Error: Empty authority received from ZarinPal")
+                    # print("Error: Empty authority received from ZarinPal")
                     return {'success': False, 'error': 'شناسه پرداخت دریافت نشد', 'status': -99}
                 
-                print(f"New API success - Authority: {authority}")
+                # print(f"New API success - Authority: {authority}")
                 return {'success': True, 'authority': authority}
             else:
                 # درخواست ناموفق
                 errors = response_data.get('errors', [])
                 error_message = errors[0].get('message') if errors else 'خطای نامشخص'
                 code = errors[0].get('code') if errors else -1
-                print(f"New API payment request failed with code {code}: {error_message}")
+                # print(f"New API payment request failed with code {code}: {error_message}")
                 return {'success': False, 'error': error_message, 'status': code}
                 
         except requests.exceptions.RequestException as e:
-            print(f"New API connection error: {str(e)}")
+            # print(f"New API connection error: {str(e)}")
             return {'success': False, 'error': f'خطا در اتصال به درگاه: {str(e)}'}
         except (ValueError, json.JSONDecodeError) as e:
-            print(f"New API response parsing error: {str(e)}")
+            # print(f"New API response parsing error: {str(e)}")
             return {'success': False, 'error': f'خطا در فرمت پاسخ درگاه: {str(e)}'}
         except Exception as e:
-            print(f"New API unexpected error: {str(e)}")
+            # print(f"New API unexpected error: {str(e)}")
             return {'success': False, 'error': f'خطای نامشخص: {str(e)}'}
     
     def payment_verification(self, authority, amount):
@@ -236,14 +236,14 @@ class ZarinPal:
         # تبدیل قیمت به ریال
         amount_in_rials = amount * 10
         
-        print(f"Verifying payment - Authority: {authority}, Amount: {amount} Toman ({amount_in_rials} Rial)")
+        # print(f"Verifying payment - Authority: {authority}, Amount: {amount} Toman ({amount_in_rials} Rial)")
         
         # اول با استاندارد جدید تلاش می‌کنیم
         result = self._payment_verification_new_api(authority, amount_in_rials)
         
         # اگر موفق نبود، با استاندارد قدیمی تلاش می‌کنیم
         if not result['success']:
-            print("New API verification failed, trying old API...")
+            # print("New API verification failed, trying old API...")
             result = self._payment_verification_old_api(authority, amount_in_rials)
             
         return result
@@ -259,8 +259,8 @@ class ZarinPal:
             'Amount': amount_in_rials,
         }
         
-        print(f"Old API verification URL: {self.verification_url}")
-        print(f"Old API verification data: {data}")
+        # print(f"Old API verification URL: {self.verification_url}")
+        # print(f"Old API verification data: {data}")
             
         # ارسال درخواست تأیید به زرین پال
         try:
@@ -269,8 +269,8 @@ class ZarinPal:
                 'Accept': 'application/json'
             }
             response = requests.post(self.verification_url, json=data, headers=headers, timeout=10)
-            print(f"Old API verification response status: {response.status_code}")
-            print(f"Old API verification response content: {response.text}")
+            # print(f"Old API verification response status: {response.status_code}")
+            # print(f"Old API verification response content: {response.text}")
             
             # بررسی کد وضعیت HTTP
             if response.status_code != 200:
@@ -286,23 +286,23 @@ class ZarinPal:
             if response_data.get('Status') == 100:
                 # تأیید موفق - دریافت کد پیگیری
                 ref_id = response_data.get('RefID')
-                print(f"Old API verification success - RefID: {ref_id}")
+                # print(f"Old API verification success - RefID: {ref_id}")
                 return {'success': True, 'ref_id': ref_id}
             else:
                 # تأیید ناموفق
                 status_code = response_data.get('Status')
                 error_message = self._get_error_message(status_code)
-                print(f"Old API verification failed with status {status_code}: {error_message}")
+                # print(f"Old API verification failed with status {status_code}: {error_message}")
                 return {'success': False, 'error': error_message, 'status': status_code}
                 
         except requests.exceptions.RequestException as e:
-            print(f"Old API verification connection error: {str(e)}")
+            # print(f"Old API verification connection error: {str(e)}")
             return {'success': False, 'error': f'خطا در اتصال به درگاه: {str(e)}'}
         except (ValueError, json.JSONDecodeError) as e:
-            print(f"Old API verification response parsing error: {str(e)}")
+            # print(f"Old API verification response parsing error: {str(e)}")
             return {'success': False, 'error': f'خطا در فرمت پاسخ درگاه: {str(e)}'}
         except Exception as e:
-            print(f"Old API verification unexpected error: {str(e)}")
+            # print(f"Old API verification unexpected error: {str(e)}")
             return {'success': False, 'error': f'خطای نامشخص: {str(e)}'}
             
     def _payment_verification_new_api(self, authority, amount_in_rials):
@@ -316,8 +316,8 @@ class ZarinPal:
             'amount': amount_in_rials,
         }
         
-        print(f"New API verification URL: {self.verification_v4_url}")
-        print(f"New API verification data: {data}")
+        # print(f"New API verification URL: {self.verification_v4_url}")
+        # print(f"New API verification data: {data}")
             
         # ارسال درخواست تأیید به زرین پال
         try:
@@ -326,8 +326,8 @@ class ZarinPal:
                 'Accept': 'application/json'
             }
             response = requests.post(self.verification_v4_url, json=data, headers=headers, timeout=10)
-            print(f"New API verification response status: {response.status_code}")
-            print(f"New API verification response content: {response.text}")
+            # print(f"New API verification response status: {response.status_code}")
+            # print(f"New API verification response content: {response.text}")
             
             # بررسی کد وضعیت HTTP
             if response.status_code != 200:
@@ -344,27 +344,27 @@ class ZarinPal:
                 # تأیید موفق - دریافت کد پیگیری
                 ref_id = response_data.get('data', {}).get('ref_id')
                 if not ref_id:
-                    print("Error: Empty ref_id received from ZarinPal")
+                    # print("Error: Empty ref_id received from ZarinPal")
                     return {'success': False, 'error': 'کد پیگیری دریافت نشد', 'status': -99}
                 
-                print(f"New API verification success - RefID: {ref_id}")
+                # print(f"New API verification success - RefID: {ref_id}")
                 return {'success': True, 'ref_id': ref_id}
             else:
                 # تأیید ناموفق
                 errors = response_data.get('errors', [])
                 error_message = errors[0].get('message') if errors else 'خطای نامشخص'
                 code = errors[0].get('code') if errors else -1
-                print(f"New API verification failed with code {code}: {error_message}")
+                # print(f"New API verification failed with code {code}: {error_message}")
                 return {'success': False, 'error': error_message, 'status': code}
                 
         except requests.exceptions.RequestException as e:
-            print(f"New API verification connection error: {str(e)}")
+            # print(f"New API verification connection error: {str(e)}")
             return {'success': False, 'error': f'خطا در اتصال به درگاه: {str(e)}'}
         except (ValueError, json.JSONDecodeError) as e:
-            print(f"New API verification response parsing error: {str(e)}")
+            # print(f"New API verification response parsing error: {str(e)}")
             return {'success': False, 'error': f'خطا در فرمت پاسخ درگاه: {str(e)}'}
         except Exception as e:
-            print(f"New API verification unexpected error: {str(e)}")
+            # print(f"New API verification unexpected error: {str(e)}")
             return {'success': False, 'error': f'خطای نامشخص: {str(e)}'}
     
     def _get_error_message(self, status_code):

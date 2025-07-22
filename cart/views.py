@@ -38,7 +38,7 @@ def show_cart(request):
         
         # استفاده از تابع get_cart_info برای دریافت اطلاعات سبد خرید
         cart_info = get_cart_info(cart)
-        print("\n\n\n\n\ncart_info['cart_items'] in cart.views.showcart cart\n\n\n\n",cart_info['cart_items'])
+        # print("\n\n\n\n\ncart_info['cart_items'] in cart.views.showcart cart\n\n\n\n",cart_info['cart_items'])
         
         context = {
         'cart': cart,
@@ -433,8 +433,8 @@ def process_payment(request):
         cart = Cart.objects.filter(user=user, is_paid=False).first()
         
         # Log for debugging
-        print("Process Payment - POST request received")
-        print(f"Form data: {request.POST}")
+        # print("Process Payment - POST request received")
+        # print(f"Form data: {request.POST}")
         
         if not cart or not cart.cartitem_set.exists():
             messages.warning(request, "سبد خرید شما خالی است")
@@ -448,10 +448,10 @@ def process_payment(request):
         order_notes = request.POST.get('order_notes', '')
         
         # Log for debugging
-        print(f"Selected address ID: {selected_address_id}")
-        print(f"Shipping method: {shipping_method}")
-        print(f"Delivery date: {delivery_date}")
-        print(f"Payment method: {payment_method}")
+        # print(f"Selected address ID: {selected_address_id}")
+        # print(f"Shipping method: {shipping_method}")
+        # print(f"Delivery date: {delivery_date}")
+        # print(f"Payment method: {payment_method}")
         
         # تبدیل تاریخ میلادی به شمسی برای ذخیره
         jalali_delivery_date = None
@@ -517,14 +517,14 @@ def process_payment(request):
         
         # محاسبه قیمت نهایی سفارش
         total_price = cart.total_price() + shipping_cost
-        print(f"Total price: {total_price} (cart: {cart.total_price()} + shipping: {shipping_cost})")
+        # print(f"Total price: {total_price} (cart: {cart.total_price()} + shipping: {shipping_cost})")
         
         # ایجاد سفارش
         try:
             # بررسی اینکه آیا سفارشی قبلا با این سبد خرید ایجاد شده است
             existing_order = Order.objects.filter(cart=cart).first()
             if existing_order:
-                print(f"Found existing order for cart: {existing_order.id}")
+                # print(f"Found existing order for cart: {existing_order.id}")
                 order = existing_order
                 # بروزرسانی اطلاعات سفارش موجود
                 order.address = selected_address
@@ -537,7 +537,7 @@ def process_payment(request):
                 order.notes = order_notes
                 order.payment_status = 'در انتظار تایید'
                 order.save()
-                print(f"Updated existing order with ID: {order.id}")
+                # print(f"Updated existing order with ID: {order.id}")
             else:
                 # ایجاد سفارش جدید اگر قبلا وجود نداشت
                 order = Order.objects.create(
@@ -553,18 +553,18 @@ def process_payment(request):
                     notes=order_notes,
                     payment_status='در انتظار تایید'
                 )
-                print(f"Order created successfully with ID: {order.id}")
+                # print(f"Order created successfully with ID: {order.id}")
             
             # اگر پرداخت آنلاین بود
             if payment_method == 'online':
-                print(f"Online payment - redirecting to payment gateway")
+                # print(f"Online payment - redirecting to payment gateway")
                 # ذخیره شناسه سفارش در سشن برای استفاده بعد از پرداخت
                 request.session['order_id'] = str(order.id)
                 request.session.save()  # ذخیره صریح سشن
                 # ارسال به درگاه پرداخت
                 return redirect('bank_payment_gateway')
             else:
-                print(f"Cash on delivery payment")
+                # print(f"Cash on delivery payment")
                 # پرداخت در محل
                 order.status = "در حال انتظار"
                 order.payment_status = 'در انتظار تایید'
@@ -599,7 +599,8 @@ def process_payment(request):
             messages.error(request, "خطا در ثبت سفارش")
             return redirect('checkout')
     else:
-        print("Non-POST request to process_payment view")
+        # print("Non-POST request to process_payment view")
+        pass # No action needed if not POST
     
     # اگر متد POST نبود یا مشکلی پیش آمد
     return redirect('checkout')
@@ -614,25 +615,25 @@ def bank_payment_gateway(request):
     import traceback
     from django.http import HttpResponseRedirect
     
-    print("Bank Payment Gateway function called")
+    # print("Bank Payment Gateway function called")
     
     order_id = request.session.get('order_id')
-    print(f"Order ID from session: {order_id}")
+    # print(f"Order ID from session: {order_id}")
     
     if not order_id:
-        print("No order ID found in session")
+        # print("No order ID found in session")
         messages.error(request, "اطلاعات سفارش یافت نشد")
         return redirect('checkout')
     
     try:
         order = Order.objects.get(id=order_id, user=request.user)
-        print(f"Found order: {order.id}, total price: {order.total_price}")
+        # print(f"Found order: {order.id}, total price: {order.total_price}")
     except Order.DoesNotExist:
-        print(f"Order with ID {order_id} not found for user {request.user.username}")
+        # print(f"Order with ID {order_id} not found for user {request.user.username}")
         messages.error(request, "سفارش مورد نظر یافت نشد")
         return redirect('checkout')
     except Exception as e:
-        print(f"Error retrieving order: {e}")
+        # print(f"Error retrieving order: {e}")
         traceback.print_exc()
         messages.error(request, "خطای سیستمی در بارگیری اطلاعات سفارش")
         return redirect('checkout')
@@ -641,22 +642,22 @@ def bank_payment_gateway(request):
     merchant_id = settings.ZARINPAL_SETTINGS.get('MERCHANT_ID')
     is_sandbox = settings.ZARINPAL_SETTINGS.get('SANDBOX', True)
     
-    print(f"ZarinPal settings - Merchant ID: {merchant_id}, Sandbox: {is_sandbox}")
+    # print(f"ZarinPal settings - Merchant ID: {merchant_id}, Sandbox: {is_sandbox}")
     
     # بررسی اعتبار مرچنت آی دی
     if not merchant_id or merchant_id == 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX':
-        print("Invalid merchant ID")
+        # print("Invalid merchant ID")
         # برای تست در محیط توسعه، یک مرچنت آی دی پیش‌فرض برای محیط تست تنظیم می‌کنیم
         if is_sandbox:
             merchant_id = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'  # این یک مرچنت آی دی ساختگی برای تست است
-            print(f"Using dummy merchant ID for sandbox: {merchant_id}")
+            # print(f"Using dummy merchant ID for sandbox: {merchant_id}")
         else:
             messages.error(request, "خطا در تنظیمات درگاه پرداخت. لطفا با پشتیبانی تماس بگیرید.")
             return redirect('checkout')
     
     # تنظیم آدرس بازگشت
     callback_url = request.build_absolute_uri(reverse('verify_payment'))
-    print(f"Callback URL: {callback_url}")
+    # print(f"Callback URL: {callback_url}")
     
     # ایجاد توضیحات
     order_number = getattr(order, 'order_number', order.id)
@@ -664,14 +665,14 @@ def bank_payment_gateway(request):
     
     # راه اندازی زرین پال و درخواست پرداخت
     amount = int(order.total_price)  # مبلغ به تومان
-    print(f"Payment amount (Toman): {amount}")
+    # print(f"Payment amount (Toman): {amount}")
     
     try:
         client = ZarinPal(merchant_id, callback_url, sandbox=is_sandbox)
         email = request.user.email if hasattr(request.user, 'email') and request.user.email else None
         result = client.payment_request(amount, description, email=email)
         
-        print(f"ZarinPal payment request result: {result}")
+        # print(f"ZarinPal payment request result: {result}")
         
         if result.get('success', False):
             # ذخیره اطلاعات تراکنش در سشن
@@ -683,11 +684,11 @@ def bank_payment_gateway(request):
         else:
             # خطا در ایجاد درخواست پرداخت
             error_message = result.get('error', 'خطای نامشخص در اتصال به درگاه پرداخت')
-            print(f"Payment request failed: {error_message}")
+            # print(f"Payment request failed: {error_message}")
             messages.error(request, error_message)
             return redirect('checkout')
     except Exception as e:
-        print(f"Exception in payment gateway: {e}")
+        # print(f"Exception in payment gateway: {e}")
         traceback.print_exc()
         
         # در صورت خطا در اتصال به درگاه، صفحه شبیه‌سازی تست نمایش دهیم
@@ -716,23 +717,23 @@ def verify_payment(request):
     from .zarinpal import ZarinPal
     import traceback
     
-    print("Verify Payment function called")
+    # print("Verify Payment function called")
     
     # دریافت پارامترهای برگشتی از درگاه پرداخت
     authority = request.GET.get('Authority')
     status = request.GET.get('Status')
     
-    print(f"Authority: {authority}, Status: {status}")
+    # print(f"Authority: {authority}, Status: {status}")
     
     # اگر پارامترهای برگشتی معتبر نباشند
     if not authority or not status:
-        print("Missing Authority or Status parameters")
+        # print("Missing Authority or Status parameters")
         messages.error(request, "اطلاعات پرداخت معتبر نیست")
         return redirect('checkout')
     
     # اگر عملیات پرداخت لغو شده باشد
     if status != 'OK':
-        print("Payment was canceled or failed by user")
+        # print("Payment was canceled or failed by user")
         messages.error(request, "عملیات پرداخت لغو شد")
         return redirect('checkout')
     
@@ -740,19 +741,19 @@ def verify_payment(request):
     order_id = request.session.get('order_id')
     
     if not order_id:
-        print("No order_id found in session")
+        # print("No order_id found in session")
         messages.error(request, "اطلاعات سفارش یافت نشد")
         return redirect('checkout')
     
     try:
         order = Order.objects.get(id=order_id, user=request.user)
-        print(f"Found order with ID: {order.id}")
+        # print(f"Found order with ID: {order.id}")
     except Order.DoesNotExist:
-        print(f"Order with ID {order_id} not found for user {request.user.username}")
+        # print(f"Order with ID {order_id} not found for user {request.user.username}")
         messages.error(request, "سفارش مورد نظر یافت نشد")
         return redirect('checkout')
     except Exception as e:
-        print(f"Error retrieving order: {e}")
+        # print(f"Error retrieving order: {e}")
         traceback.print_exc()
         messages.error(request, "خطای سیستمی در بازیابی اطلاعات سفارش")
         return redirect('checkout')
@@ -761,7 +762,7 @@ def verify_payment(request):
     merchant_id = settings.ZARINPAL_SETTINGS.get('MERCHANT_ID')
     is_sandbox = settings.ZARINPAL_SETTINGS.get('SANDBOX', True)
     
-    print(f"ZarinPal settings - Merchant ID: {merchant_id}, Sandbox: {is_sandbox}")
+    # print(f"ZarinPal settings - Merchant ID: {merchant_id}, Sandbox: {is_sandbox}")
     
     # آماده‌سازی آدرس بازگشت برای ارسال به ZarinPal
     callback_url = request.build_absolute_uri(reverse('verify_payment'))
@@ -771,7 +772,7 @@ def verify_payment(request):
         client = ZarinPal(merchant_id, callback_url, sandbox=is_sandbox)
         result = client.payment_verification(authority, order.total_price)
         
-        print(f"Verification result: {result}")
+        # print(f"Verification result: {result}")
         
         if result['success']:
             # پرداخت موفق - بروزرسانی سفارش و سبد خرید
@@ -788,7 +789,8 @@ def verify_payment(request):
                     message = f"سفارش شما با موفقیت ثبت و پرداخت شد. کد پیگیری: {ref_id}\nاز خرید شما متشکریم."
                     send_sms(user_phone, message)
             except Exception as e:
-                print(f"Error sending SMS to user: {e}")
+                # print(f"Error sending SMS to user: {e}")
+                pass # No print for SMS sending
 
             # علامت‌گذاری سبد خرید به عنوان پرداخت‌شده
             order.cart.is_paid = True
@@ -807,7 +809,8 @@ def verify_payment(request):
                         package.save()
                 except Exception as e:
                     # Log error if updating quantity fails for an item
-                    print(f"Error updating quantity for package {package.id} after online payment: {e}")
+                    # print(f"Error updating quantity for package {package.id} after online payment: {e}")
+                    pass # No print for quantity update
 
             # پاک کردن شناسه سفارش از سشن
             if 'order_id' in request.session:
@@ -825,7 +828,7 @@ def verify_payment(request):
             error_message = result.get('error', 'خطای نامشخص در تأیید پرداخت')
             status_code = result.get('status', -1)
             
-            print(f"Payment verification failed: {error_message} (code: {status_code})")
+            # print(f"Payment verification failed: {error_message} (code: {status_code})")
             
             # ثبت اطلاعات خطا در سفارش
             order.payment_status = 'ناموفق'
@@ -837,7 +840,7 @@ def verify_payment(request):
             return redirect('checkout')
     
     except Exception as e:
-        print(f"Exception in payment verification: {e}")
+        # print(f"Exception in payment verification: {e}")
         traceback.print_exc()
         messages.error(request, f"خطای سیستمی در تأیید پرداخت: {str(e)}")
         return redirect('checkout')
