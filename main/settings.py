@@ -304,3 +304,4 @@ UNFOLD = {
     "STYLES": [lambda request: static("assets/css/admin-logo.css")],
 }
 
+   
