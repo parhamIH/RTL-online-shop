@@ -127,7 +127,6 @@ def products_list(request):
     
 
 
-    print("Total filtered products:", len(unique_packages))  # تعداد محصولات بدون تکرار
 
  
     return render(request, "template/products.html", context)

@@ -27,7 +27,6 @@ def get_cart_info(cart):
         for package_id, count in package_counts.items():
             new_item = CartItem(package_id=package_id, count=count)
             cart_items_new.append(new_item)
-        print("\n\n\n\n\ncart_items_new  (utils.py)",cart_items_new)
 
         return {
             'cart_items': cart_items_new,
