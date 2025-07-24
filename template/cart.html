@@ -149,8 +149,8 @@
                                 <!-- تصویر محصول -->
                                 <div class="col-md-2 w-100-in-400">
                                     <div class="image">
-                                        <a href="/product/{{item.package.product.id}}/{{item.package.product.name}}">
-
+                                        {# Assumes a URL pattern named 'product_detail' that takes a product ID. #}
+                                        <a href="{% url 'product_detail' item.package.product.id item.package.product.name %}">
                                             <img src="{{ item.package.product.image.url }}" 
                                             alt="{{ item.package.product.name }}" 
                                             class="img-fluid" >
@@ -163,7 +163,7 @@
                                         <!-- اطلاعات محصول -->
                                         <div class="product-info">
                                             <h6 class="font-16">
-                                                <a href="/product/{{item.package.product.id}}/{{item.package.product.name}}">
+                                                <a href="{% url 'product_detail' item.package.product.id item.package.product.name %}">
                                                     {{ item.package.product.name }}
 
                                                 </a>
@@ -187,13 +187,8 @@
                                                 {% if item.package.size %}
                                                 <div class="product-size">
                                                     <span class="fw-bold">سایز:</span>
-                                                    {% if item.package.size.size %}
-                                                        <span class="ms-1">{{ item.package.size.size }}</span>
-                                                    {% elif item.package.size.size_numrical %}
-                                                        <span class="ms-1">{{ item.package.size.size_numrical }}</span>
-                                                    {% elif item.package.size.number_size %}
-                                                        <span class="ms-1">{{ item.package.size.number_size }}</span>
-                                                    {% endif %}
+                                                    {# This requires the `display_size` property on your Size model. #}
+                                                    <span class="ms-1">{{ item.package.size.display_size }}</span>
                                                 </div>
                                                 {% endif %}
                                             </div>
@@ -292,25 +287,14 @@
                 </div>
             </div>
         </div>
-    
+
         <!-- بخش کوپن تخفیف -->
         {% if cart_items %}
-        <div class="container-fluid">
-            <div class="show-discount-modal pointer py-3 mb-3" data-bs-toggle="modal" data-bs-target="#discountModal">
-                <i class="bi bi-patch-exclamation main-color-one-color me-2" style="font-size: 40px;"></i>
-                کوپن تخفیف دارید؟ اینجا کلیک کنید.
+        <div class="my-3">
+            <div class="show-discount-modal pointer p-3 bg-white rounded-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#discountModal">
+                <i class="bi bi-patch-exclamation main-color-one-color me-2" style="font-size: 24px; vertical-align: middle;"></i>
+                <span style="vertical-align: middle;">کوپن تخفیف دارید؟ برای ثبت کد اینجا کلیک کنید.</span>
             </div>
-        </div>
-        {% endif %}
-    </div>
-    
-
-    <div class="container-fluid">
-        {% if cart_items %}
-        <div class="show-discount-modal pointer py-3 mb-3" data-bs-toggle="modal" data-bs-target="#discountModal">
-            <i class="bi bi-patch-exclamation main-color-one-color me-2" style="font-size: 40px;"></i>
-            کوپن تخفیف دارید برای نوشتن کد اینجا کلیک
-            کنید
         </div>
         {% endif %}
     </div>
