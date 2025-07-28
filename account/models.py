@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.contrib.auth.models import User
@@ -149,9 +150,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
-
 class UserCoupon(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='coupons')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='offer_coupons')
     code = models.CharField(max_length=50)
     discount = models.PositiveIntegerField(help_text="درصد یا مبلغ تخفیف")
     is_active = models.BooleanField(default=True)
@@ -159,5 +159,4 @@ class UserCoupon(models.Model):
     expire_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.code} ({self.user.username})"
-
+        return f"{self.code}  --- ({self.user.username})"

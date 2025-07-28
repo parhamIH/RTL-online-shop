@@ -54,6 +54,14 @@ def upload_slider_image_path(instance, filename):
     final_name = f"slider-{unique_id}{ext}"
     return f"slider-images/{final_name}"
 
+
+# مدل جدید برای بنرهای تبلیغاتی
+def upload_banner_image_path(instance, filename):
+    name, ext = get_filename_ext(filename)
+    unique_id = get_random_string(length=15)
+    final_name = f"banner-{unique_id}{ext}"
+    return f"banner-images/{final_name}"
+
 # مدل دسته‌بندی اصلی
 class BaseCategorys(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="اسم  --  فارسی --  دسته بندی اصلی")
@@ -102,7 +110,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-# مدل برند
+# مدل برند  public
 class Brand(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="نام ---فارسی")
     en_name = models.CharField(max_length=50, unique=True, verbose_name="نام ---انگلیسی")
@@ -124,7 +132,7 @@ class Brand(models.Model):
     def __str__(self):
         return self.en_name
 
-# ادامه مدل‌ها
+# ادامه مدل‌ها public
 class BaseColor(models.Model):
     COLOR_PALETTE = [
         ("#FFFFFF", "white"),
@@ -143,6 +151,7 @@ class BaseColor(models.Model):
     def __str__(self):
         return f"{self.name}" if self.name else "بدون نام"
    
+# مدل رنگ  public
 class Color(models.Model):
     name = models.CharField(max_length=50, verbose_name= "نام رنگ")
     hex_code = models.CharField(max_length=7, verbose_name= "کد هگز رنگ",help_text=" مثال: #FFFFFF")
@@ -156,6 +165,7 @@ class Color(models.Model):
     def __str__(self):
         return self.name
 
+# مدل سایز  public
 class Size(models.Model):
     SIZE_CHOICES= [
         ("XS","XS"),
@@ -215,12 +225,6 @@ class HomeSlider(models.Model):
             img = img.resize(output_size, Image.LANCZOS)
             img.save(self.image.path)
 
-# مدل جدید برای بنرهای تبلیغاتی
-def upload_banner_image_path(instance, filename):
-    name, ext = get_filename_ext(filename)
-    unique_id = get_random_string(length=15)
-    final_name = f"banner-{unique_id}{ext}"
-    return f"banner-images/{final_name}"
 
 class PromotionalBanner(models.Model):
     POSITION_CHOICES = [
@@ -279,7 +283,7 @@ class FeaturedBrand(models.Model):
     def __str__(self):
         return f"{self.brand.name}"
 
-# مدل محصول
+# مدل محصول product
 class Product(models.Model):
     name = models.CharField(max_length=150, unique= True, verbose_name="نام محصول")
     description = models.TextField(verbose_name="توضیحات")
@@ -310,6 +314,7 @@ class Product(models.Model):
             # ذخیره تصویر با ابعاد جدید
             img.save(self.image.path)
 
+# مدل ویژگی های محصول product 
 class ProductPackage(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='product_packages')
     # ____________________________________________________*product attributes *___________________________________________
@@ -360,6 +365,7 @@ class ProductPackage(models.Model):
             
         super().save(*args, **kwargs)
 
+# مدل گالری محصول  product
 class Gallery(models.Model):
 
     product = models.ForeignKey(Product,on_delete=models.CASCADE,verbose_name="محصول")
@@ -560,8 +566,3 @@ class ProductSpecification(models.Model): # is main field
         verbose_name = 'مقدار مشخصه محصول'
         verbose_name_plural = 'مقادیر مشخصات محصول'
         unique_together = ['product', 'specification']
-
-
-    
-
-
