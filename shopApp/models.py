@@ -63,6 +63,11 @@ def upload_banner_image_path(instance, filename):
     return f"banner-images/{final_name}"
 
 # مدل دسته‌بندی اصلی
+
+
+
+
+
 class BaseCategorys(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="اسم  --  فارسی --  دسته بندی اصلی")
     en_name = models.CharField(max_length=50, unique=True, verbose_name="اسم- --انگلیسی-- دسته بندی اصلی")

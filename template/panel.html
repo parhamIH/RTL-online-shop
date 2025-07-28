@@ -111,33 +111,33 @@
                         <div class="panel-nav-nav">
                             <nav class="navbar profile-box-nav">
                                 <ul class="navbar-nav flex-column">
-                                    <li class="nav-item {% if request.path == '/profile' %}active{% endif %}"><a href="/profile" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile' or request.path == '/profile/' %}active{% endif %}"><a href="/profile" class="nav-link">
                                         <i class="bi bi-house-door"></i>پروفایل</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/orders' %}active{% endif %}"><a href="/profile/orders" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/orders' or request.path == '/profile/orders/' %}active{% endif %}"><a href="/profile/orders" class="nav-link">
                                         <i class="bi bi-cart-check"></i>سفارش های من</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/address' %}active{% endif %}"><a href="/profile/address" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/address' or request.path == '/profile/address/' %}active{% endif %}"><a href="/profile/address" class="nav-link">
                                         <i class="bi bi-pin-map"></i>آدرس های من</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/notification' %}active{% endif %}"><a href="/profile/notification" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/notification' or request.path == '/profile/notification/' %}active{% endif %}"><a href="/profile/notification" class="nav-link">
                                         <i class="bi bi-bell"></i>پیام ها و اطلاعیه ها</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/comments' %}active{% endif %}"><a href="/profile/comments" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/comments' or request.path == '/profile/comments/' %}active{% endif %}"><a href="/profile/comments" class="nav-link">
                                         <i class="bi bi-chat-dots"></i>نظرات من</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/support' %}active{% endif %}"><a href="/support" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/support' or request.path == '/support/' %}active{% endif %}"><a href="/support" class="nav-link">
                                         <i class="bi bi-question-circle"></i>درخواست پشتیبانی</a>
                                     </li>
                                     {% if user.is_staff %}
-                                    <li class="nav-item {% if request.path == '/support/admin/' %}active{% endif %}"><a href="/support/admin/" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/support/admin/' or request.path == '/support/admin' %}active{% endif %}"><a href="/support/admin/" class="nav-link">
                                         <i class="bi bi-headset"></i>پنل مدیریت تیکت‌ها</a>
                                     </li>
                                     {% endif %}
-                                    <li class="nav-item {% if request.path == '/profile/list' %}active{% endif %}"><a href="/profile/list" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/list' or request.path == '/profile/list/' %}active{% endif %}"><a href="/profile/list" class="nav-link">
                                         <i class="bi bi-heart"></i>محصولات مورد علاقه</a>
                                     </li>
-                                        <li class="nav-item {% if request.path == '/profile/offers' %}active{% endif %}"><a href="/profile/offers" class="nav-link">
+                                        <li class="nav-item {% if request.path == '/profile/offers' or request.path == '/profile/offers/' %}active{% endif %}"><a href="/profile/offers" class="nav-link">
                                             <i class="bi bi-gift"></i>کد های تخفیف من</a>
                                         </li>
                                     <li class="nav-item"><a href="/logout/" class="nav-link">
@@ -164,34 +164,34 @@
                         <div class="panel-nav-nav">
                             <nav class="navbar profile-box-nav">
                                 <ul class="navbar-nav flex-column">
-                                    <li class="nav-item {% if request.path == '/profile' %}active{% endif %}"><a href="/profile" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile' or request.path == '/profile/' %}active{% endif %}"><a href="/profile" class="nav-link">
                                         <i class="bi bi-house-door"></i>پروفایل</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/orders' %}active{% endif %}"><a href="/profile/orders" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/orders' or request.path == '/profile/orders/' %}active{% endif %}"><a href="/profile/orders" class="nav-link">
                                         <i class="bi bi-cart-check"></i>سفارش های من</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/address' %}active{% endif %}"><a href="/profile/address" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/address' or request.path == '/profile/address/' %}active{% endif %}"><a href="/profile/address" class="nav-link">
                                         <i class="bi bi-pin-map"></i>آدرس های من</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/notification' %}active{% endif %}"><a href="/profile/notification" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/notification' or request.path == '/profile/notification/' %}active{% endif %}"><a href="/profile/notification" class="nav-link">
                                         <i class="bi bi-bell"></i>پیام ها و اطلاعیه ها</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/profile/comments' %}active{% endif %}"><a href="/profile/comments" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/comments' or request.path == '/profile/comments/' %}active{% endif %}"><a href="/profile/comments" class="nav-link">
                                         <i class="bi bi-chat-dots"></i>نظرات من</a>
                                     </li>
-                                    <li class="nav-item {% if request.path == '/support' %}active{% endif %}"><a href="/support" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/support' or request.path == '/support/' %}active{% endif %}"><a href="/support" class="nav-link">
                                         <i class="bi bi-question-circle"></i>درخواست پشتیبانی</a>
                                     </li>
                                     {% if user.is_staff %}
-                                    <li class="nav-item {% if request.path == '/support/admin/' %}active{% endif %}"><a href="/support/admin/" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/support/admin/' or request.path == '/support/admin' %}active{% endif %}"><a href="/support/admin/" class="nav-link">
                                         <i class="bi bi-headset"></i>پنل مدیریت تیکت‌ها</a>
                                     </li>
                                     {% endif %}
-                                    <li class="nav-item {% if request.path == '/profile/list' %}active{% endif %}"><a href="/profile/list" class="nav-link">
+                                    <li class="nav-item {% if request.path == '/profile/list' or request.path == '/profile/list/' %}active{% endif %}"><a href="/profile/list" class="nav-link">
                                         <i class="bi bi-heart"></i>محصولات مورد علاقه</a>
                                     </li>
-                                    <!-- <li class="nav-item {% if request.path == '/profile/offers' %}active{% endif %}"><a href="/profile/offers" class="nav-link"> -->
-                                        <!-- <i class="bi bi-gift"></i>کد های تخفیف من</a> -->
+                                    <li class="nav-item {% if request.path == '/profile/offers' or request.path == '/profile/offers/' %}active{% endif %}"><a href="/profile/offers" class="nav-link">
+                                        <i class="bi bi-gift"></i>کد های تخفیف من</a>
                                     </li>
                                     <li class="nav-item"><a href="/logout/" class="nav-link">
                                         <i class="bi bi-arrow-right-square"></i>خروج از حساب کاربری</a>
