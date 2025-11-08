@@ -1,91 +1,171 @@
-# RTL-online-shop
-this is a Django online shop web application RLT
+# RTL Online Shop
 
-# Project Setup Guide
+A comprehensive Django-based e-commerce platform with RTL (Right-to-Left) support, specifically designed for Persian/Arabic markets.
 
-## English
+## 🌟 Features
 
-### Prerequisites
+- **Multi-language Support**: Persian (RTL) and English interfaces
+- **Advanced Admin Panel**: Customized with Unfold theme
+- **User Management**: 
+  - Custom user authentication
+  - User profiles
+  - Order history
+- **Product Management**:
+  - Category and subcategory system
+  - Product variants
+  - Image gallery
+  - Stock management
+- **Shopping Features**:
+  - Shopping cart
+  - Wishlist
+  - Order tracking
+  - ZarinPal payment integration
+- **Support System**:
+  - Ticket system
+  - Customer support
+- **Blog/Articles Section**
 
-- Python 3.x installed on your system.
+## 🛠 Technical Stack
 
-### Setup Instructions
+### Core Technologies
+- Python 3.x
+- Django 4.2.x
+- MySQL Database
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repository-url>
-    cd <your-repository-directory>
-    ```
+### Key Packages
+- `unfold`: Modern admin interface
+- `django-jalali`: Persian date support
+- `colorfield`: Color picker for admin
+- `Pillow`: Image processing
+- `mysqlclient`: MySQL database connector
 
-2.  **Create a virtual environment:**
-    It's recommended to use a virtual environment to manage project dependencies.
+## 🚀 Installation & Setup
 
-    -   On Windows:
-        ```bash
-        python -m venv venv
-        .\venv\Scripts\activate
-        ```
-    -   On macOS/Linux:
-        ```bash
-        python3 -m venv venv
-        source venv/bin/activate
-        ```
+1. **Clone the Repository**
+```bash
+git clone https://github.com/yourusername/RTL-online-shop.git
+cd RTL-online-shop
+```
 
-3.  **Install dependencies:**
-    Install the required packages using the `freeze.txt` file:
-    ```bash
-    pip install -r freeze.txt
-    ```
+2. **Set Up Virtual Environment**
+```bash
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
+```
 
-4.  **Run the application:**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    python manage.py runserver
-    ```
+3. **Install Dependencies**
+```bash
+pip install -r freeze.txt
+```
 
+4. **Database Setup**
+```bash
+# Create MySQL database
+mysql -u root -p
+CREATE DATABASE shahan_shop CHARACTER SET utf8mb4;
 
----
+# Configure database in settings.py
+# Update DATABASES settings with your credentials
+```
 
-## فارسی
+5. **Run Migrations**
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
 
-### پیش‌نیازها
+6. **Create Superuser**
+```bash
+python manage.py createsuperuser
+```
 
--   پایتون نسخه ۳ یا بالاتر روی سیستم شما نصب باشد.
+7. **Run Development Server**
+```bash
+python manage.py runserver
+```
 
-### دستورالعمل‌های راه‌اندازی
+## 🌐 Available URLs
 
-۱.  **کلون کردن ریپازیتوری:**
-    ```bash
-    git clone <your-repository-url>
-    cd <your-repository-directory>
-    ```
-    *(به جای `<your-repository-url>` آدرس ریپازیتوری خود و به جای `<your-repository-directory>` نام پوشه پروژه خود را قرار دهید)*
+### Public URLs
+- `/`: Homepage
+- `/shop/`: Products listing
+- `/shop/category/<slug>/`: Category products
+- `/shop/product/<slug>/`: Product detail
+- `/cart/`: Shopping cart
+- `/account/`: User dashboard
+- `/blog/`: Articles section
 
-۲.  **ایجاد محیط مجازی (virtual environment):**
-    پیشنهاد می‌شود برای مدیریت وابستگی‌های پروژه از یک محیط مجازی استفاده کنید.
+### User Account URLs
+- `/account/login/`: User login
+- `/account/register/`: User registration
+- `/account/profile/`: User profile
+- `/account/orders/`: Order history
 
-    -   در ویندوز:
-        ```bash
-        python -m venv venv
-        .\venv\Scripts\activate
-        ```
-    -   در مک‌او‌اس/لینوکس:
-        ```bash
-        python3 -m venv venv
-        source venv/bin/activate
-        ```
-    *پس از فعال‌سازی محیط مجازی، نام `(venv)` در ابتدای خط فرمان شما نمایش داده می‌شود.*
+### Admin URLs
+- `/admin/`: Admin dashboard
+- `/admin/products/`: Product management
+- `/admin/orders/`: Order management
+- `/admin/users/`: User management
+- `/admin/support/`: Support tickets
 
-۳.  **نصب وابستگی‌ها:**
-    بسته‌های مورد نیاز پروژه را با استفاده از فایل `freeze.txt` نصب کنید:
-    ```bash
-    pip install -r freeze.txt
-    ```
+## 💡 Key Features in Detail
 
-۴.  **اجرای برنامه:**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    python manage.py runserver
-    ```
+### Security Features
+- CSRF protection
+- XSS prevention
+- Secure password hashing
+- SSL/HTTPS support
+- Session security
+
+### E-commerce Features
+- Real-time inventory management
+- Multiple payment methods
+- Order tracking system
+- Discount system
+- Rating and review system
+
+### Admin Features
+- Custom admin dashboard
+- Sales analytics
+- User management
+- Product management
+- Order processing
+- Support ticket system
+
+## 📦 Project Structure
+```
+RTL-online-shop/
+├── account/         # User authentication & profiles
+├── adminpanel/      # Custom admin interface
+├── articles/        # Blog functionality
+├── cart/           # Shopping cart
+├── shopApp/        # Main shop application
+├── support/        # Ticket system
+├── static/         # Static files
+├── templates/      # HTML templates
+└── main/           # Project settings
+```
+
+## 🔧 Configuration
+
+Key configuration files:
+- `settings.py`: Main Django settings
+- `urls.py`: URL routing
+- `.env`: Environment variables (create from .env.example)
+
+## 📝 Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🤝 Support
+
+For support, email [your-email@domain.com] or open an issue in the repository.

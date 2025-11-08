@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 
 # کلید API کاوه نگار را از متغیرهای محیطی می‌خوانیم یا به صورت مستقیم تعریف می‌کنیم
-KAVENEGAR_API_KEY = os.environ.get('KAVENEGAR_API_KEY', '454F4B50684B70626163446F6D4D6E2B496A7550586677746777444D543271777966303431534D486931383D')
+KAVENEGAR_API_KEY = os.environ.get('KAVENEGAR_API_KEY', '')
 KAVENEGAR_SENDER = '2000660110'  # شماره ارسال کننده پیامک
 
 def generate_verification_code():

@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+3de5-7n=)wez3lmrwck17lnd4fz5r=si=uzs4*fja4*9hl-mr'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fatiimaa.ir', 'www.fatiimaa.ir','.fatiimaa.ir', "*"]
+ALLOWED_HOSTS = ["*",""]
 
 
 # Application definition
@@ -103,31 +103,13 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'fatiimaa_database',
-#         'USER': 'fatiimaa_user',
-#         'PASSWORD': 'Iq^?QIIaA^.,Ecz8',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'sql_mode': 'STRICT_ALL_TABLES',
-#             'charset': 'utf8mb4',
-#             'init_command': "SET NAMES 'utf8mb4'",
-#         },
-#     }
-# }
-
-
-
 
 DATABASES = {
 		'default': {
 			'ENGINE': 'django.db.backends.mysql',
 			'NAME': 'shahan_shop',
 			'USER': 'root',
-			'PASSWORD': 'mysql', 
+			'PASSWORD': '', 
 			'HOST':'localhost',
 			'PORT':'3306',
 		}
@@ -168,8 +150,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "assets")]
-# STATIC_ROOT = "/home/fatiimaa/public_html/static"  ##server
 
 STATICFILES_DIRS = [BASE_DIR / 'template', BASE_DIR / 'templateAdmin']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -187,9 +167,6 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#media file - directory
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = "/home/fatiimaa/public_html/media"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "uploads"
 
