@@ -47,12 +47,12 @@ INSTALLED_APPS = [
     'django_jalali',
     'jalali_date',
     #/////////////////////////////////////
-    "shopApp",
-    'account',
+    "shopApp", #--> normal online shop 
+    'account', #--> user panel
     "cart",
     'adminpanel',
-    "support",
-    "articles",
+    "support", #--> tickets
+    "articles", # -- > articles  
     #-----them
     "unfold.contrib.filters",  # optional, if special filters are needed
     "unfold.contrib.forms",  # optional, if special form elements are needed
@@ -127,7 +127,7 @@ DATABASES = {
 			'ENGINE': 'django.db.backends.mysql',
 			'NAME': 'shahan_shop',
 			'USER': 'root',
-			'PASSWORD': 'parhams', 
+			'PASSWORD': 'mysql', 
 			'HOST':'localhost',
 			'PORT':'3306',
 		}
@@ -271,8 +271,8 @@ X_FRAME_OPTIONS = 'DENY'
 
 
 UNFOLD = {
-    "SITE_TITLE": "پنل مدیریت فاطیما",
-    "SITE_HEADER": "پنل مدیریت فاطیما",
+    "SITE_TITLE": "پنل مدیریت ",
+    "SITE_HEADER": "پنل مدیریت ",
     "SITE_LOGO": {
         "light": lambda request: static("assets/img/logo.png"),
         "dark": lambda request: static("assets/img/logo.png"),
