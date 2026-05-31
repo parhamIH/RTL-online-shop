@@ -43,7 +43,7 @@ A comprehensive Django-based e-commerce platform with RTL (Right-to-Left) suppor
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/RTL-online-shop.git
+git clone https://github.com/parhamih/RTL-online-shop.git
 cd RTL-online-shop
 ```
 
